@@ -5,6 +5,7 @@ export default function SignIn() {
     const [formData, setFormData] = useState({})
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false)
+    const [showError, setShowError] = useState(false)
 
     const navigate = useNavigate()
 
@@ -17,6 +18,13 @@ export default function SignIn() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+
+        if (!formData.email || !formData.password) {
+            setError("Vui lòng điền email và mật khẩu.")
+            setShowError(true)
+            return
+        }
+
         try {
             setLoading(true)
             const res = await fetch('api/auth/signin', {
@@ -32,6 +40,7 @@ export default function SignIn() {
             if (data.success === false) {
                 setLoading(false)
                 setError(data.message)
+                setShowError(true)
                 return
             }
             setLoading(false)
@@ -40,7 +49,12 @@ export default function SignIn() {
         } catch (error) {
             setLoading(false)
             setError(error.message)
+            setShowError(true)
         }
+    }
+
+    const closeErrorCard = () => {
+        setShowError(false)
     }
 
     return (
@@ -61,7 +75,16 @@ export default function SignIn() {
                     <span className='text-blue-700'>Sign up</span>
                 </Link>
             </div>
-            {error && <p className='text-red-500 mt-5'>{error}</p>}
+
+            {showError && (
+                <div className="fixed inset-0 flex items-center justify-center z-50">
+                    <div className="fixed inset-0 bg-black opacity-50"></div>
+                    <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
+                        <p className='text-red-500'>{error}</p>
+                        <button onClick={closeErrorCard} className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600">Close</button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
