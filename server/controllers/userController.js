@@ -18,10 +18,6 @@ const updateUser = async (req, res, next) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        if (req.body.email && user.emailChanged) {
-            return res.status(400).json({ error: 'You can only change your email once' });
-        }
-
         if (req.body.password) {
             req.body.password = bcrypt.hashSync(req.body.password, 10);
         }
@@ -32,7 +28,9 @@ const updateUser = async (req, res, next) => {
                 email: req.body.email || user.email,
                 password: req.body.password || user.password,
                 avatar: req.body.avatar || user.avatar,
-                emailChanged: req.body.email ? true : user.emailChanged,
+                gender: req.body.gender || user.gender,
+                phoneNumber: req.body.phoneNumber || user.phoneNumber,
+                address: req.body.address || user.address,
             }
         }, { new: true });
 

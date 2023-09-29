@@ -7,6 +7,7 @@ export default function SignUp() {
     const [loading, setLoading] = useState(false)
     const [showError, setShowError] = useState(false)
     const [formValid, setFormValid] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
 
     const navigate = useNavigate()
 
@@ -88,6 +89,10 @@ export default function SignUp() {
         setShowError(false)
     }
 
+    const toggleShowPassword = () => {
+        setShowPassword(!showPassword);
+    }
+
     return (
         <div className='p-3 max-w-lg mx-auto'>
             <h1 className='text-3xl text-center font-semibold my-7'>Sign up</h1>
@@ -106,13 +111,23 @@ export default function SignUp() {
                     placeholder='Enter your email...'
                     className='border p-3 rounded-lg'
                 />
-                <input
-                    onChange={handleChange}
-                    type='password'
-                    id='password'
-                    placeholder='Enter your password...'
-                    className='border p-3 rounded-lg'
-                />
+                <div className="mb-4 flex items-center">
+                    <input
+                        onChange={handleChange}
+                        type={showPassword ? 'text' : 'password'}
+                        id='password'
+                        placeholder='Enter your password...'
+                        className='border p-3 rounded-lg'
+                        style={{ width: '100%' }}
+                    />
+                    <span
+                        onClick={toggleShowPassword}
+                        className="absolute flex cursor-pointer"
+                        style={{ right: '38%' }}
+                    >
+                        {showPassword ? 'Hide' : 'Show'}
+                    </span>
+                </div>
                 <button
                     disabled={loading}
                     className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'

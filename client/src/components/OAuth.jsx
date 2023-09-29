@@ -3,7 +3,8 @@ import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth'
 import { app } from '../firebase'
 import { useDispatch } from 'react-redux'
 import { signInSuccess } from '../redux/User/userSlice'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
+import googleIcon from './../assets/google-icon.png'
 
 export default function OAuth() {
     const dispatch = useDispatch()
@@ -38,7 +39,12 @@ export default function OAuth() {
 
     return (
         <button onClick={handleGoogleClick} type='button' className='bg-green-500 text-white p-3 rounded-lg uppercase hover:opacity-95'>
-            Continue with google
+            <div className='flex items-center justify-center gap-4'>
+                <img style={{
+                    width: '30px',
+                    height: '30px',
+                }} src={googleIcon} alt="Google Icon" /> Continue with Google
+            </div>
         </button>
     )
 }

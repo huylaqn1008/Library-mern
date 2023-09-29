@@ -8,6 +8,7 @@ export default function SignIn() {
     const [formData, setFormData] = useState({})
     const { loading, error } = useSelector((state) => state.user)
     const [showError, setShowError] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -70,6 +71,10 @@ export default function SignIn() {
         setShowError(false)
     }
 
+    const toggleShowPassword = () => {
+        setShowPassword(!showPassword);
+    }
+
     return (
         <div className='p-3 max-w-lg mx-auto'>
             <h1 className='text-3xl text-center font-semibold my-7'>
@@ -77,7 +82,23 @@ export default function SignIn() {
             </h1>
             <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
                 <input onChange={handleChange} type='email' id='email' placeholder='Enter your email...' className='border p-3 rounded-lg' />
-                <input onChange={handleChange} type='password' id='password' placeholder='Enter your password...' className='border p-3 rounded-lg' />
+                <div className="mb-4 flex items-center">
+                    <input
+                        onChange={handleChange}
+                        type={showPassword ? 'text' : 'password'}
+                        id='password'
+                        placeholder='Enter your password...'
+                        className='border p-3 rounded-lg'
+                        style={{ width: '100%' }}
+                    />
+                    <span
+                        onClick={toggleShowPassword}
+                        className="absolute flex cursor-pointer"
+                        style={{ right: '38%' }}
+                    >
+                        {showPassword ? 'Hide' : 'Show'}
+                    </span>
+                </div>
                 <button disabled={loading} className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>
                     {loading ? 'Loading...' : 'Sign in'}
                 </button>
