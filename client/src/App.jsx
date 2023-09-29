@@ -6,6 +6,7 @@ import Profile from "./pages/Profile"
 import About from "./pages/About"
 import Header from "./components/Header"
 import PrivateRoute from "./components/PrivateRoute"
+import ForgotPassword from "./pages/ForgotPassword"
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<Profile />} />
         </Route>
+        <Route path="/forgotpassword" element={<ForgotPassword />} />
       </Routes>
     </BrowserRouter>
   )

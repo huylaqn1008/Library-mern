@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getStorage, uploadBytesResumable, ref, getDownloadURL } from 'firebase/storage'
 import { app } from '../firebase'
-import { updateUserFailure, updateUserStart, updateUserSuccess } from '../redux/User/userSlice'
+import { signOutUserFailure, signOutUserStart, signOutUserSuccess, updateUserFailure, updateUserStart, updateUserSuccess } from '../redux/User/userSlice'
 
 export default function Profile() {
     const fileRef = useRef(null)
@@ -71,7 +71,7 @@ export default function Profile() {
 
         if (!formData.username || !formData.email) {
             setInputError("Please fill in all fields.")
-            setFormData({ ...formData, username: initialUsername }) // Khôi phục giá trị "username"
+            setFormData({ ...formData, username: initialUsername })
             return
         }
 
@@ -81,7 +81,7 @@ export default function Profile() {
         }
 
         try {
-            setUpdateLoading(true) // Bắt đầu quá trình cập nhật
+            setUpdateLoading(true)
             dispatch(updateUserStart())
 
             const res = await fetch(`/api/user/update/${currentUser._id}`, {
@@ -108,8 +108,24 @@ export default function Profile() {
             setUpdateError(error.message)
             setUpdateLoading(false)
         }
-
     }
+
+    const handleSignOut = async () => {
+        try {
+            dispatch(signOutUserStart());
+
+            const res = await fetch('/api/auth/signout');
+            const data = await res.json();
+
+            if (data.success === false) {
+                dispatch(signOutUserFailure(data.message));
+            } else {
+                dispatch(signOutUserSuccess());
+            }
+        } catch (error) {
+            dispatch(signOutUserFailure(error.message));
+        }
+    };
 
     return (
         <div className='p-3 max-w-lg mx-auto'>
@@ -157,8 +173,7 @@ export default function Profile() {
                     placeholder='phone number'
                     id='phoneNumber'
                     value={formData.phoneNumber || currentUser.phoneNumber}
-                    className={`border p-3 rounded-lg ${vietnamMobileRegex.test(formData.phoneNumber) ? '' : 'border-red-500'
-                        }`}
+                    className={`border p-3 rounded-lg ${vietnamMobileRegex.test(formData.phoneNumber)}`}
                     onChange={handlChange}
                 />
                 <select id='gender' value={formData.gender || currentUser.gender} className='border p-3 rounded-lg' onChange={handlChange}>
@@ -187,8 +202,7 @@ export default function Profile() {
             </form>
 
             <div className='flex justify-between mt-5'>
-                <span className='text-red-700 cursor-pointer'>Delete account</span>
-                <span className='text-red-700 cursor-pointer'>Sign out</span>
+                <span onClick={handleSignOut} className='text-red-700 cursor-pointer'>Sign out</span>
             </div>
 
             {inputError && (
