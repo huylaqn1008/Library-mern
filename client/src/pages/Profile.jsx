@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { getStorage, uploadBytesResumable, ref, getDownloadURL } from 'firebase/storage'
 import { app } from '../firebase'
@@ -17,8 +18,9 @@ export default function Profile() {
     const [updateError, setUpdateError] = useState("")
     const [inputError, setInputError] = useState("")
     const [initialUsername, setInitialUsername] = useState(currentUser.username)
+    const [showLogoutModal, setShowLogoutModal] = useState(false)
 
-    const vietnamMobileRegex = /^(03[2-9]|05[6-9]|07[06-9]|08[1-9]|09[0-9])[0-9]{7}$/;
+    const vietnamMobileRegex = /^(03[2-9]|05[6-9]|07[06-9]|08[1-9]|09[0-9])[0-9]{7}$/
 
     const dispatch = useDispatch()
 
@@ -52,6 +54,13 @@ export default function Profile() {
         }
     }, [file])
 
+    useEffect(() => {
+        setFormData({
+            username: currentUser.username,
+            email: currentUser.email,
+        })
+    }, [currentUser])
+
     //Firebase store
     //allow read
     //allow write: if
@@ -75,7 +84,18 @@ export default function Profile() {
             return
         }
 
-        if (!vietnamMobileRegex.test(formData.phoneNumber)) {
+        if (
+            formData.username === currentUser.username &&
+            formData.email === currentUser.email &&
+            formData.phoneNumber === currentUser.phoneNumber &&
+            formData.gender === currentUser.gender &&
+            formData.address === currentUser.address
+        ) {
+            setUpdateError("No changes to update.")
+            return;
+        }
+
+        if (formData.phoneNumber && !vietnamMobileRegex.test(formData.phoneNumber)) {
             setInputError("Invalid phone number. Please enter a valid Vietnamese mobile number.");
             return;
         }
@@ -110,22 +130,33 @@ export default function Profile() {
         }
     }
 
+
+    const openLogoutModal = () => {
+        setShowLogoutModal(true)
+    }
+
+    const closeLogoutModal = () => {
+        setShowLogoutModal(false)
+    }
+
     const handleSignOut = async () => {
-        try {
-            dispatch(signOutUserStart());
-
-            const res = await fetch('/api/auth/signout');
-            const data = await res.json();
-
-            if (data.success === false) {
-                dispatch(signOutUserFailure(data.message));
-            } else {
-                dispatch(signOutUserSuccess());
+        if (showLogoutModal) {
+            try {
+                dispatch(signOutUserStart())
+                const res = await fetch('/api/auth/signout')
+                const data = await res.json()
+                if (data.success === false) {
+                    dispatch(signOutUserFailure(data.message))
+                } else {
+                    dispatch(signOutUserSuccess())
+                }
+            } catch (error) {
+                dispatch(signOutUserFailure(error.message))
             }
-        } catch (error) {
-            dispatch(signOutUserFailure(error.message));
+        } else {
+            openLogoutModal()
         }
-    };
+    }
 
     return (
         <div className='p-3 max-w-lg mx-auto'>
@@ -199,6 +230,9 @@ export default function Profile() {
                         </div>
                     ) : 'Update'}
                 </button>
+                <Link to={'/create-book'} className='bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95'>
+                    Create book
+                </Link>
             </form>
 
             <div className='flex justify-between mt-5'>
@@ -231,6 +265,17 @@ export default function Profile() {
                     <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
                         <p className="text-green-700">User is updated successfully!</p>
                         <button onClick={() => setUpdateSuccess(false)} className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">Close</button>
+                    </div>
+                </div>
+            )}
+
+            {showLogoutModal && (
+                <div className="fixed inset-0 flex items-center justify-center z-50">
+                    <div className="fixed inset-0 bg-black opacity-50"></div>
+                    <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
+                        <p className="text-red-500">Bạn có chắc muốn đăng xuất không?</p>
+                        <button onClick={handleSignOut} className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 mr-2">Yes</button>
+                        <button onClick={closeLogoutModal} className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600">No</button>
                     </div>
                 </div>
             )}
