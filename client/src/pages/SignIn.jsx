@@ -72,7 +72,7 @@ export default function SignIn() {
     }
 
     const toggleShowPassword = () => {
-        setShowPassword(!showPassword);
+        setShowPassword(!showPassword)
     }
 
     return (

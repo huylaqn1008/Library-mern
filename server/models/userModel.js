@@ -20,8 +20,7 @@ const userSchema = new mongoose.Schema({
         default: "https://img.freepik.com/premium-vector/anonymous-user-flat-icon-vector-illustration-with-long-shadow_520826-1932.jpg"
     },
     phoneNumber: {
-        type: String,
-        required: true
+        type: String
     },
     gender: {
         type: String,

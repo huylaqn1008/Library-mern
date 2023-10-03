@@ -1,21 +1,38 @@
 import { getDownloadURL, getStorage, uploadBytesResumable, ref } from 'firebase/storage'
 import React, { useState } from 'react'
 import { app } from '../firebase'
+import { useSelector } from 'react-redux'
 
 export default function CreateBook() {
+    const { currentUser } = useSelector(state => state.user)
+
     const [files, setFiles] = useState([])
     const [formData, setFormData] = useState({
-        imageUrls: []
+        imageUrls: [],
+        category: '',
+        name: '',
+        author: '',
+        description: '',
+        sell: true,
+        rent: false,
+        offer: false,
+        quantity: 1,
+        buyPrice: 50000,
+        rentPrice: 5000,
+        discountPrice: 5000
     })
     const [imageUploadError, setImageUploadError] = useState(false)
     const [uploading, setUploading] = useState(false)
+    const [error, setError] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [success, setSuccess] = useState(false)
 
     console.log(formData)
 
     const handleImageSubmit = () => {
         if (files && files.length + formData.imageUrls.length <= 6) {
             if (files.length === 0) {
-                setImageUploadError('Please choose a file for upload!')
+                setImageUploadError('You must upload at least one image!')
                 return
             }
             setUploading(true)
@@ -70,8 +87,76 @@ export default function CreateBook() {
         })
     }
 
+    const handleChange = (e) => {
+        const { id, value, type, checked } = e.target
+        if (type === 'checkbox') {
+            setFormData((prevState) => ({
+                ...prevState,
+                [id]: checked,
+            }))
+        } else {
+            setFormData((prevState) => ({
+                ...prevState,
+                [id]: value,
+            }))
+        }
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        try {
+            if (files.length < 1) {
+                setError('You must upload at least one image!')
+                return
+            }
+            if (+formData.buyPrice < +formData.discountPrice || +formData.rentPrice < +formData.discountPrice) {
+                setError('Discount price must be lower than buy price and rent price!')
+                return
+            }
+
+            setLoading(true)
+            setError(false)
+            const res = await fetch('api/book/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ...formData,
+                    userRef: currentUser._id
+                }),
+            })
+            const data = await res.json()
+            setLoading(false)
+            if (data.success === false) {
+                setError(data.message)
+            } else {
+                setSuccess(true)
+                setFormData({
+                    imageUrls: [],
+                    category: '',
+                    name: '',
+                    author: '',
+                    description: '',
+                    sell: true,
+                    rent: false,
+                    offer: false,
+                    quantity: 1,
+                    buyPrice: 50000,
+                    rentPrice: 5000,
+                    discountPrice: 5000
+                })
+            }
+        } catch (error) {
+            setError(error.message)
+            setLoading(false)
+        }
+    }
+
     const closeErrorCard = () => {
         setImageUploadError(false)
+        setError(false)
+        setSuccess(false)
     }
 
     return (
@@ -79,17 +164,8 @@ export default function CreateBook() {
             <h1 className='text-3xl font-semibold text-center my-7'>
                 Create a book
             </h1>
-            <form className='flex flex-col sm:flex-row gap-4'>
+            <form onSubmit={handleSubmit} className='flex flex-col sm:flex-row gap-4'>
                 <div className='flex flex-col gap-4 flex-1'>
-                    <input
-                        type='text'
-                        placeholder='Author'
-                        id='author'
-                        maxLength='62'
-                        minLength='10'
-                        required
-                        className='border p-3 rounded-lg'
-                    />
                     <input
                         type='text'
                         placeholder='Category'
@@ -98,6 +174,8 @@ export default function CreateBook() {
                         minLength='10'
                         required
                         className='border p-3 rounded-lg'
+                        onChange={handleChange}
+                        value={formData.category}
                     />
                     <input
                         type='text'
@@ -107,6 +185,19 @@ export default function CreateBook() {
                         minLength='10'
                         required
                         className='border p-3 rounded-lg'
+                        onChange={handleChange}
+                        value={formData.name}
+                    />
+                    <input
+                        type='text'
+                        placeholder='Author'
+                        id='author'
+                        maxLength='62'
+                        minLength='10'
+                        required
+                        className='border p-3 rounded-lg'
+                        onChange={handleChange}
+                        value={formData.author}
                     />
                     <textarea
                         type='text'
@@ -116,43 +207,91 @@ export default function CreateBook() {
                         minLength='10'
                         required
                         className='border p-3 rounded-lg'
+                        onChange={handleChange}
+                        value={formData.description}
                     />
                     <div className='flex gap-6 flex-wrap'>
                         <div className='flex gap-2'>
-                            <input type='checkbox' id='sale' className='w-5' />
+                            <input type='checkbox' id='sell' className='w-5' onChange={handleChange} checked={formData.sell} />
                             <span>Sell</span>
                         </div>
                         <div className='flex gap-2'>
-                            <input type='checkbox' id='rent' className='w-5' />
+                            <input type='checkbox' id='rent' className='w-5' onChange={handleChange} checked={formData.rent} />
                             <span>Rent</span>
+                        </div>
+                        <div className='flex gap-2'>
+                            <input type='checkbox' id='offer' className='w-5' onChange={handleChange} checked={formData.offer} />
+                            <span>Offer</span>
                         </div>
                     </div>
                     <div className='flex flex-wrap gap-6'>
                         <div className='flex items-center gap-2'>
-                            <input type='number' id='quantity' min='1' max='10' required className='p-3 border border-gray-300 rounded-lg' />
+                            <input
+                                type='number'
+                                id='quantity'
+                                min='1'
+                                max='10'
+                                required
+                                className='p-3 border border-gray-300 rounded-lg'
+                                onChange={handleChange}
+                                value={formData.quantity}
+                            />
                             <p>Quantity</p>
                         </div>
-                        <div className='flex items-center gap-2'>
-                            <input type='number' id='buyprice' min='1' max='10' required className='p-3 border border-gray-300 rounded-lg' />
-                            <div className='flex flex-col items-center'>
-                                <p>Buy price</p>
-                                <span className='text-xs'>(VNĐ / piece)</span>
+                        {formData.sell && (
+                            <div className='flex items-center gap-2'>
+                                <input
+                                    type='number'
+                                    id='buyPrice'
+                                    min='50000'
+                                    max='10000000'
+                                    required
+                                    className='p-3 border border-gray-300 rounded-lg'
+                                    onChange={handleChange}
+                                    value={formData.buyPrice}
+                                />
+                                <div className='flex flex-col items-center'>
+                                    <p>Buy price</p>
+                                    <span className='text-xs'>(VNĐ / piece)</span>
+                                </div>
                             </div>
-                        </div>
-                        <div className='flex items-center gap-2'>
-                            <input type='number' id='rentprice' min='1' max='10' required className='p-3 border border-gray-300 rounded-lg' />
-                            <div className='flex flex-col items-center'>
-                                <p>Rent price</p>
-                                <span className='text-xs'>(VNĐ / piece / days)</span>
+                        )}
+                        {formData.rent && (
+                            <div className='flex items-center gap-2'>
+                                <input
+                                    type='number'
+                                    id='rentPrice'
+                                    min='5000'
+                                    max='10000000'
+                                    required
+                                    className='p-3 border border-gray-300 rounded-lg'
+                                    onChange={handleChange}
+                                    value={formData.rentPrice}
+                                />
+                                <div className='flex flex-col items-center'>
+                                    <p>Rent price</p>
+                                    <span className='text-xs'>(VNĐ / piece / days)</span>
+                                </div>
                             </div>
-                        </div>
-                        <div className='flex items-center gap-2'>
-                            <input type='number' id='discountPrice' min='1' max='10' required className='p-3 border border-gray-300 rounded-lg' />
-                            <div className='flex flex-col items-center'>
-                                <p>Discounted price</p>
-                                <span className='text-xs'>(VNĐ / piece)</span>
+                        )}
+                        {formData.offer && (
+                            <div className='flex items-center gap-2'>
+                                <input
+                                    type='number'
+                                    id='discountPrice'
+                                    min='5000'
+                                    max='10000000'
+                                    required
+                                    className='p-3 border border-gray-300 rounded-lg'
+                                    onChange={handleChange}
+                                    value={formData.discountPrice}
+                                />
+                                <div className='flex flex-col items-center'>
+                                    <p>Discounted price</p>
+                                    <span className='text-xs'>(VNĐ / piece)</span>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
                 <div className='flex flex-col flex-1 gap-4'>
@@ -180,7 +319,7 @@ export default function CreateBook() {
                         formData.imageUrls.length > 0 && formData.imageUrls.map((url, index) => {
                             return (
                                 <div key={url} className='flex justify-between p-3 borer items-center'>
-                                    <img src={url} alt='listing image' className='w-32 h-32' />
+                                    <img src={url} alt='listing image' className='w-32 h-36' />
                                     <button
                                         onClick={() => handleRemoveImage(index)}
                                         className='p-3 text-red-700 rounded-lg uppercase hover:opacity-95'
@@ -192,15 +331,35 @@ export default function CreateBook() {
                         })
                     }
                     <button className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>
-                        Create book
+                        {loading ? 'Creating...' : 'Create book'}
                     </button>
 
                     {imageUploadError && (
                         <div className="fixed inset-0 flex items-center justify-center z-50">
                             <div className="fixed inset-0 bg-black opacity-50"></div>
                             <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
-                                <p className='text-red-500'>{imageUploadError}</p> {/* Fixed */}
+                                <p className='text-red-500'>{imageUploadError}</p>
                                 <button onClick={closeErrorCard} className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600">Close</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {error && (
+                        <div className="fixed inset-0 flex items-center justify-center z-50">
+                            <div className="fixed inset-0 bg-black opacity-50"></div>
+                            <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
+                                <p className='text-red-500'>{error}</p>
+                                <button onClick={closeErrorCard} className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600">Close</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {success && (
+                        <div className="fixed inset-0 flex items-center justify-center z-50">
+                            <div className="fixed inset-0 bg-black opacity-50"></div>
+                            <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
+                                <p className='text-green-500'>Book created successfully!</p>
+                                <button onClick={closeErrorCard} className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">Close</button>
                             </div>
                         </div>
                     )}

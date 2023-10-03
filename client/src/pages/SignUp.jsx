@@ -12,8 +12,8 @@ export default function SignUp() {
     const navigate = useNavigate()
 
     useEffect(() => {
-        validateForm();
-    }, [formData]);
+        validateForm()
+    }, [formData])
 
     const handleChange = (e) => {
         const { id, value } = e.target
@@ -90,7 +90,7 @@ export default function SignUp() {
     }
 
     const toggleShowPassword = () => {
-        setShowPassword(!showPassword);
+        setShowPassword(!showPassword)
     }
 
     return (

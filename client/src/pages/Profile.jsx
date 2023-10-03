@@ -12,7 +12,10 @@ export default function Profile() {
     const [file, setFile] = useState(undefined)
     const [filePerc, setFilePerc] = useState(0)
     const [fileUploadError, setFileUploadError] = useState(false)
-    const [formData, setFormData] = useState({})
+    const [formData, setFormData] = useState({
+        username: currentUser.username || '', // Initialize with the user's username or an empty string
+        email: currentUser.email,
+    })
     const [updateSuccess, setUpdateSuccess] = useState(false)
     const [updateLoading, setUpdateLoading] = useState(false)
     const [updateError, setUpdateError] = useState("")
@@ -92,12 +95,12 @@ export default function Profile() {
             formData.address === currentUser.address
         ) {
             setUpdateError("No changes to update.")
-            return;
+            return
         }
 
         if (formData.phoneNumber && !vietnamMobileRegex.test(formData.phoneNumber)) {
-            setInputError("Invalid phone number. Please enter a valid Vietnamese mobile number.");
-            return;
+            setInputError("Invalid phone number. Please enter a valid Vietnamese mobile number.")
+            return
         }
 
         try {
@@ -273,7 +276,7 @@ export default function Profile() {
                 <div className="fixed inset-0 flex items-center justify-center z-50">
                     <div className="fixed inset-0 bg-black opacity-50"></div>
                     <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
-                        <p className="text-red-500">Bạn có chắc muốn đăng xuất không?</p>
+                        <p className="text-red-500">Are you sure you want to sign out?</p>
                         <button onClick={handleSignOut} className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 mr-2">Yes</button>
                         <button onClick={closeLogoutModal} className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600">No</button>
                     </div>
