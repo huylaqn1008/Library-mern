@@ -111,7 +111,7 @@ export default function SignUp() {
                     placeholder='Enter your email...'
                     className='border p-3 rounded-lg'
                 />
-                <div className="mb-4 flex items-center">
+                <div className="mb-4 flex items-center relative">
                     <input
                         onChange={handleChange}
                         type={showPassword ? 'text' : 'password'}
@@ -122,8 +122,7 @@ export default function SignUp() {
                     />
                     <span
                         onClick={toggleShowPassword}
-                        className="absolute flex cursor-pointer"
-                        style={{ right: '38%' }}
+                        className="absolute right-0 top-0 mt-3 mr-3 cursor-pointer"
                     >
                         {showPassword ? 'Hide' : 'Show'}
                     </span>
