@@ -22,9 +22,13 @@ export default function Profile() {
     const [inputError, setInputError] = useState("")
     const [initialUsername, setInitialUsername] = useState(currentUser.username)
     const [showLogoutModal, setShowLogoutModal] = useState(false)
-    const [showBooks, setShowBooks] = useState(false);
+    const [showBooks, setShowBooks] = useState(false)
     const [showBooksError, setShowBooksError] = useState(false)
     const [userBooks, setUserBooks] = useState([])
+    const [showDeleteBookModal, setShowDeleteBookModal] = useState(false)
+    const [bookToDelete, setBookToDelete] = useState(null)
+    const [deleteSuccess, setDeleteSuccess] = useState(false)
+    const [deleteSuccessMessage, setDeleteSuccessMessage] = useState("")
 
     const vietnamMobileRegex = /^(03[2-9]|05[6-9]|07[06-9]|08[1-9]|09[0-9])[0-9]{7}$/
 
@@ -183,6 +187,42 @@ export default function Profile() {
         }
     }
 
+    const handleDeleteBook = async (bookId) => {
+        try {
+            const res = await fetch(`api/book/delete/${bookId}`, {
+                method: 'DELETE'
+            })
+
+            const data = await res.json()
+            if (data.success === false) {
+                console.log(data.message)
+                return
+            }
+
+            setDeleteSuccess(true)
+            setDeleteSuccessMessage("Book deleted successfully")
+
+            closeDeleteBookModal()
+
+            setUserBooks(
+                (prev) => prev.filter(
+                    (book) => book._id !== bookId
+                )
+            )
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
+    const openDeleteBookModal = (book) => {
+        setBookToDelete(book)
+        setShowDeleteBookModal(true)
+    }
+
+    const closeDeleteBookModal = () => {
+        setShowDeleteBookModal(false)
+    }
+
     return (
         <div className='p-3 max-w-lg mx-auto'>
             <h1 className='text-3xl font-semibold text-center my-7'>
@@ -288,7 +328,7 @@ export default function Profile() {
                                 </Link>
 
                                 <div className='flex flex-col items-center'>
-                                    <button className='text-red-700 uppercase'>Delete</button>
+                                    <button onClick={() => openDeleteBookModal(book)} className='text-red-700 uppercase'>Delete</button>
                                     <button className='text-green-700 uppercase'>Edit</button>
                                 </div>
                             </div>
@@ -335,6 +375,28 @@ export default function Profile() {
                         <p className="text-red-500">Are you sure you want to sign out?</p>
                         <button onClick={handleSignOut} className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 mr-2">Yes</button>
                         <button onClick={closeLogoutModal} className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600">No</button>
+                    </div>
+                </div>
+            )}
+
+            {showDeleteBookModal && (
+                <div className="fixed inset-0 flex items-center justify-center z-50">
+                    <div className="fixed inset-0 bg-black opacity-50"></div>
+                    <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
+                        <p className="text-red-500">Are you sure you want to delete this book?</p>
+                        <p className="text-slate-700 font-semibold">{bookToDelete ? bookToDelete.name : ''}</p>
+                        <button onClick={() => handleDeleteBook(bookToDelete._id)} className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 mr-2">Yes</button>
+                        <button onClick={closeDeleteBookModal} className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600">No</button>
+                    </div>
+                </div>
+            )}
+
+            {deleteSuccess && (
+                <div className="fixed inset-0 flex items-center justify-center z-50">
+                    <div className="fixed inset-0 bg-black opacity-50"></div>
+                    <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
+                        <p className="text-green-700">{deleteSuccessMessage}</p>
+                        <button onClick={() => setDeleteSuccess(false)} className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">Close</button>
                     </div>
                 </div>
             )}
