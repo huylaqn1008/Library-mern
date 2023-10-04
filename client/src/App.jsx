@@ -9,6 +9,7 @@ import PrivateRoute from "./components/PrivateRoute"
 import ForgotPassword from "./pages/ForgotPassword"
 import CreateBook from "./pages/CreateBook"
 import UpdateBook from "./pages/UpdateBook"
+import Book from "./pages/Book"
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/update-book/:bookId" element={<UpdateBook />} />
         </Route>
         <Route path="/forgotpassword" element={<ForgotPassword />} />
+        <Route path="/book/:bookId" element={<Book />} />
       </Routes>
     </BrowserRouter>
   )

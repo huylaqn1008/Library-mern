@@ -201,7 +201,6 @@ export default function CreateBook() {
                         type='text'
                         placeholder='Description'
                         id='description'
-                        maxLength='62'
                         minLength='10'
                         required
                         className='border p-3 rounded-lg'

@@ -2,11 +2,14 @@ import { getDownloadURL, getStorage, uploadBytesResumable, ref } from 'firebase/
 import React, { useEffect, useState } from 'react'
 import { app } from '../firebase'
 import { useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 export default function UpdateBook() {
     const { currentUser } = useSelector(state => state.user)
     const params = useParams()
+
+    const navigate = useNavigate()
+
     const [files, setFiles] = useState([])
     const [formData, setFormData] = useState({
         imageUrls: [],
@@ -125,8 +128,8 @@ export default function UpdateBook() {
                 setError('You must upload at least one image!')
                 return
             }
-            if (+formData.buyPrice < +formData.discountPrice || +formData.rentPrice < +formData.discountPrice) {
-                setError('Discount price must be lower than buy price and rent price!')
+            if (+formData.buyPrice < +formData.discountPrice) {
+                setError('Discount price must be lower than buy price!')
                 return
             }
             setLoading(true)
@@ -154,10 +157,15 @@ export default function UpdateBook() {
         }
     }
 
+    const handleSuccessClose = () => {
+        setSuccess(false)
+        navigate('/profile')
+    }
+
     const closeErrorCard = () => {
         setImageUploadError(false)
         setError(false)
-        setSuccess(false)
+        handleSuccessClose()
     }
 
     return (
@@ -204,7 +212,6 @@ export default function UpdateBook() {
                         type='text'
                         placeholder='Description'
                         id='description'
-                        maxLength='62'
                         minLength='10'
                         required
                         className='border p-3 rounded-lg'
