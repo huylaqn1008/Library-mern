@@ -5,13 +5,17 @@ import SwiperCore from 'swiper'
 import { Navigation } from 'swiper/modules'
 import 'swiper/css/bundle'
 import { FaShare } from 'react-icons/fa'
+import { useSelector } from 'react-redux'
+import Contact from '../components/Contact'
 
 export default function Book() {
     SwiperCore.use([Navigation])
 
     const params = useParams()
 
-    const [book, setBook] = useState(null)
+    const currentUser = useSelector((state) => state.user.currentUser)
+
+    const [book, setBook] = useState()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
     const [showRentPrice, setShowRentPrice] = useState(false)
@@ -19,6 +23,7 @@ export default function Book() {
     const [showTotalPrice, setShowTotalPrice] = useState(false)
     const [copied, setCopied] = useState(false)
     const [showMore, setShowMore] = useState(false)
+    const [contact, setContact] = useState(false)
 
     useEffect(() => {
         const fetchBook = async () => {
@@ -229,9 +234,15 @@ export default function Book() {
                                 </div>
                             </div>
                         </div>
-                        <button>
-                            Contact
-                        </button>
+                        {currentUser && book.userRef !== currentUser._id && !contact && (
+                            <button
+                                onClick={() => setContact(true)}
+                                className='bg-yellow-500 text-black p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
+                            >
+                                Contact
+                            </button>
+                        )}
+                        {contact && <Contact book={book} />}
                     </div>
                 </div>
             )}

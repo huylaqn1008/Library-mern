@@ -58,4 +58,18 @@ const getUserBooks = async (req, res, next) => {
     }
 }
 
-module.exports = { test, updateUser, getUserBooks }
+const getUser = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id)
+
+        if (!user) return res.status(404).json({ error: 'User not found' })
+
+        const { password: pass, ...rest } = user._doc
+
+        res.status(200).json(rest)
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { test, updateUser, getUserBooks, getUser }

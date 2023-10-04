@@ -75,4 +75,45 @@ const getBook = async (req, res, next) => {
     }
 }
 
-module.exports = { createBook, deleteBook, updateBook, getBook }
+const getBooks = async (req, res, next) => {
+    try {
+        const limit = parseInt(req.query.limit) || 9
+        const startIndex = parseInt(req.query.startIndex) || 0
+
+        let offer = req.query.offer
+        if (offer === undefined || offer === 'false') {
+            offer = { $in: [false, true] }
+        }
+
+        let sell = req.query.sell
+        if (sell === undefined || sell === 'false') {
+            sell = { $in: [false, true] }
+        }
+
+        let rent = req.query.rent
+        if (rent === undefined || rent === 'false') {
+            rent = { $in: [false, true] }
+        }
+
+        const searchTerm = req.query.searchTerm || ''
+
+        const sort = req.query.sort || 'createdAt'
+
+        const order = req.query.order || 'desc'
+
+        const books = await Book.find({
+            name: { $regex: searchTerm, $options: 'i' },
+            offer,
+            sell,
+            rent
+        }).sort(
+            { [sort]: order }
+        ).limit(limit).skip(startIndex)
+
+        return res.status(200).json(books)
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { createBook, deleteBook, updateBook, getBook, getBooks }
