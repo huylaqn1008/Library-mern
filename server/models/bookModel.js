@@ -25,6 +25,10 @@ const bookSchema = new mongoose.Schema({
         type: Boolean,
         required: true
     },
+    offer: {
+        type: Boolean,
+        required: true
+    },
     rentPrice: {
         type: Number,
         required: true

@@ -8,6 +8,7 @@ import Header from "./components/Header"
 import PrivateRoute from "./components/PrivateRoute"
 import ForgotPassword from "./pages/ForgotPassword"
 import CreateBook from "./pages/CreateBook"
+import UpdateBook from "./pages/UpdateBook"
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/create-book" element={<CreateBook />} />
+          <Route path="/update-book/:bookId" element={<UpdateBook />} />
         </Route>
         <Route path="/forgotpassword" element={<ForgotPassword />} />
       </Routes>
