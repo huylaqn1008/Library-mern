@@ -10,6 +10,7 @@ import ForgotPassword from "./pages/ForgotPassword"
 import CreateBook from "./pages/CreateBook"
 import UpdateBook from "./pages/UpdateBook"
 import Book from "./pages/Book"
+import Search from "./pages/Search"
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
         </Route>
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/book/:bookId" element={<Book />} />
+        <Route path="/search" element={<Search />} />
       </Routes>
     </BrowserRouter>
   )

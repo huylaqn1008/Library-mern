@@ -99,21 +99,23 @@ const getBooks = async (req, res, next) => {
 
         const sort = req.query.sort || 'createdAt'
 
-        const order = req.query.order || 'desc'
+        const order = req.query.order === 'asc' ? 1 : -1
 
         const books = await Book.find({
             name: { $regex: searchTerm, $options: 'i' },
             offer,
             sell,
             rent
-        }).sort(
-            { [sort]: order }
-        ).limit(limit).skip(startIndex)
+        })
+            .sort({ [sort]: order })
+            .limit(limit)
+            .skip(startIndex)
 
         return res.status(200).json(books)
     } catch (error) {
         next(error)
     }
 }
+
 
 module.exports = { createBook, deleteBook, updateBook, getBook, getBooks }
