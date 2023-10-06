@@ -1,14 +1,14 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react'
+import { Link } from 'react-router-dom'
 
 export default function BookItem({ book }) {
     return (
-        <div className='bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[200px]'>
+        <div className='bg-white mr-4 ml-4 shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[300px]'>
             <Link to={`/book/${book._id}`}>
                 <img
                     src={book.imageUrls[0]}
                     alt='book cover'
-                    className='sm:h-[300px] w-[250px] object-cover hover:scale-105 transition-scale duration-300'
+                    className='sm:h-[470px] w-[300px] object-cover hover:scale-105 transition-scale duration-300'
                 />
             </Link>
             <div className='p-3 text-justify flex flex-col gap-2 w-full'>
@@ -23,13 +23,20 @@ export default function BookItem({ book }) {
                         <p className='text-slate-500 mt-2 font-semibold items-center'>
                             {book.offer ? (
                                 <div className='text-green-600'>
-                                    {(book.buyPrice - book.discountPrice).toLocaleString('vi-VN')} VNĐ / per
-                                    <p className='text-gray-500 italic'>
-                                        ({((book.discountPrice / book.buyPrice) * 100).toFixed(0)}% off)
-                                    </p>
+                                    {(book.buyPrice - (book.offer ? book.discountPrice : 0)).toLocaleString('vi-VN')} VNĐ / per
+                                    {book.offer && (
+                                        <p className='text-gray-500 italic'>
+                                            ({((book.discountPrice / book.buyPrice) * 100).toFixed(0)}% off)
+                                        </p>
+                                    )}
                                 </div>
                             ) : (
-                                <div>Chỉ cho thuê</div>
+                                <div className='text-green-600'>
+                                    {(book.buyPrice - (book.offer ? book.discountPrice : 0)).toLocaleString('vi-VN')} VNĐ / per
+                                    <p className='text-gray-500 italic'>
+                                        Không giảm giá
+                                    </p>
+                                </div>
                             )}
                         </p>
                     ) : (

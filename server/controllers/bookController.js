@@ -102,7 +102,11 @@ const getBooks = async (req, res, next) => {
         const order = req.query.order === 'asc' ? 1 : -1
 
         const books = await Book.find({
-            name: { $regex: searchTerm, $options: 'i' },
+            $or: [
+                { name: { $regex: searchTerm, $options: 'i' } },
+                { author: { $regex: searchTerm, $options: 'i' } },
+                { category: { $regex: searchTerm, $options: 'i' } }
+            ],
             offer,
             sell,
             rent

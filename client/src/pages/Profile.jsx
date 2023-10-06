@@ -29,6 +29,7 @@ export default function Profile() {
     const [bookToDelete, setBookToDelete] = useState(null)
     const [deleteSuccess, setDeleteSuccess] = useState(false)
     const [deleteSuccessMessage, setDeleteSuccessMessage] = useState("")
+    const [currentPage, setCurrentPage] = useState(1)
 
     const vietnamMobileRegex = /^(03[2-9]|05[6-9]|07[06-9]|08[1-9]|09[0-9])[0-9]{7}$/
 
@@ -223,6 +224,33 @@ export default function Profile() {
         setShowDeleteBookModal(false)
     }
 
+    const itemsPerPage = 5
+    const indexOfLastItem = currentPage * itemsPerPage
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage
+    const currentItems = userBooks.slice(indexOfFirstItem, indexOfLastItem)
+
+    const totalPages = Math.ceil(userBooks.length / itemsPerPage)
+    const displayedPages = Math.min(totalPages, 5)
+    let startPage = currentPage - Math.floor(displayedPages / 2)
+    let endPage = currentPage + Math.floor(displayedPages / 2)
+
+    if (startPage <= 0) {
+        endPage += Math.abs(startPage) + 1
+        startPage = 1
+    }
+
+    if (endPage > totalPages) {
+        startPage -= endPage - totalPages
+        endPage = totalPages
+    }
+
+    const pageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index)
+
+    const handlePageClick = (pageNumber) => {
+        setCurrentPage(pageNumber)
+    }
+
+
     return (
         <div className='p-3 max-w-lg mx-auto'>
             <h1 className='text-3xl font-semibold text-center my-7'>
@@ -313,9 +341,9 @@ export default function Profile() {
             {showBooks && userBooks && userBooks.length > 0 &&
                 <div className='flex flex-col gap-4'>
                     <h1 className='text-center mt-7 text-2xl font-semibold'>Your list books</h1>
-                    {userBooks.map((book) => {
+                    {currentItems.map((book, index) => {
                         return (
-                            <div key={book._id} className='border rounded-lg p-3 flex justify-between items-center gap-4'>
+                            <div key={index} className='border rounded-lg p-3 flex justify-between items-center gap-4'>
                                 <Link to={`/book/${book._id}`}>
                                     <img
                                         src={book.imageUrls[0]}
@@ -324,7 +352,11 @@ export default function Profile() {
                                     />
                                 </Link>
                                 <Link className='text-slate-700 font-semibold flex-1 hover:underline truncate' to={`/book/${book._id}`}>
-                                    <p>{book.name}</p>
+                                    {book.name.length > 38 ? (
+                                        <marquee>{book.name}</marquee>
+                                    ) : (
+                                        <p>{book.name}</p>
+                                    )}
                                 </Link>
 
                                 <div className='flex flex-col items-center'>
@@ -336,72 +368,116 @@ export default function Profile() {
                             </div>
                         )
                     })}
+                    <div className="pagination flex justify-between items-center">
+                        <button
+                            className="prev-btn"
+                            onClick={() => handlePageClick(currentPage - 1)}
+                            disabled={currentPage === 1}
+                        >
+                            Previous
+                        </button>
+                        {pageNumbers.map((pageNumber, page) => (
+                            <button
+                                className={`page-number ${currentPage === pageNumber ? 'active' : ''}`}
+                                key={pageNumber}
+                                onClick={() => handlePageClick(pageNumber)}
+                                disabled={currentPage === pageNumber}
+                                style={{
+                                    borderRadius: '50%',
+                                    width: '30px',
+                                    height: '30px',
+                                    backgroundColor: currentPage === pageNumber ? '#4caf50' : '#e0e0e0',
+                                    color: currentPage === pageNumber ? '#fff' : '#000',
+                                }}
+                            >
+                                {page + startPage}
+                            </button>
+                        ))}
+                        <button
+                            className="next-btn"
+                            onClick={() => handlePageClick(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                        >
+                            Next
+                        </button>
+                    </div>
                 </div>
-
             }
 
-            {inputError && (
-                <div className="fixed inset-0 flex items-center justify-center z-50">
-                    <div className="fixed inset-0 bg-black opacity-50"></div>
-                    <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
-                        <p className="text-red-500">{inputError}</p>
-                        <button onClick={() => setInputError("")} className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600">Close</button>
+            {
+                inputError && (
+                    <div className="fixed inset-0 flex items-center justify-center z-50">
+                        <div className="fixed inset-0 bg-black opacity-50"></div>
+                        <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
+                            <p className="text-red-500">{inputError}</p>
+                            <button onClick={() => setInputError("")} className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600">Close</button>
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
-            {updateError && (
-                <div className="fixed inset-0 flex items-center justify-center z-50">
-                    <div className="fixed inset-0 bg-black opacity-50"></div>
-                    <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
-                        <p className="text-red-500">{updateError}</p>
-                        <button onClick={() => setUpdateError("")} className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600">Close</button>
+            {
+                updateError && (
+                    <div className="fixed inset-0 flex items-center justify-center z-50">
+                        <div className="fixed inset-0 bg-black opacity-50"></div>
+                        <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
+                            <p className="text-red-500">{updateError}</p>
+                            <button onClick={() => setUpdateError("")} className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600">Close</button>
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
-            {updateSuccess && (
-                <div className="fixed inset-0 flex items-center justify-center z-50">
-                    <div className="fixed inset-0 bg-black opacity-50"></div>
-                    <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
-                        <p className="text-green-700">User is updated successfully!</p>
-                        <button onClick={() => setUpdateSuccess(false)} className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">Close</button>
+            {
+                updateSuccess && (
+                    <div className="fixed inset-0 flex items-center justify-center z-50">
+                        <div className="fixed inset-0 bg-black opacity-50"></div>
+                        <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
+                            <p className="text-green-700">User is updated successfully!</p>
+                            <button onClick={() => setUpdateSuccess(false)} className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">Close</button>
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
-            {showLogoutModal && (
-                <div className="fixed inset-0 flex items-center justify-center z-50">
-                    <div className="fixed inset-0 bg-black opacity-50"></div>
-                    <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
-                        <p className="text-red-500">Are you sure you want to sign out?</p>
-                        <button onClick={handleSignOut} className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 mr-2">Yes</button>
-                        <button onClick={closeLogoutModal} className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600">No</button>
+            {
+                showLogoutModal && (
+                    <div className="fixed inset-0 flex items-center justify-center z-50">
+                        <div className="fixed inset-0 bg-black opacity-50"></div>
+                        <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
+                            <p className="text-red-500">Are you sure you want to sign out?</p>
+                            <button onClick={handleSignOut} className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 mr-2">Yes</button>
+                            <button onClick={closeLogoutModal} className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600">No</button>
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
-            {showDeleteBookModal && (
-                <div className="fixed inset-0 flex items-center justify-center z-50">
-                    <div className="fixed inset-0 bg-black opacity-50"></div>
-                    <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
-                        <p className="text-red-500">Are you sure you want to delete this book?</p>
-                        <p className="text-slate-700 font-semibold">{bookToDelete ? bookToDelete.name : ''}</p>
-                        <button onClick={() => handleDeleteBook(bookToDelete._id)} className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 mr-2">Yes</button>
-                        <button onClick={closeDeleteBookModal} className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600">No</button>
+            {
+                showDeleteBookModal && (
+                    <div className="fixed inset-0 flex items-center justify-center z-50">
+                        <div className="fixed inset-0 bg-black opacity-50"></div>
+                        <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
+                            <p className="text-red-500">Are you sure you want to delete this book?</p>
+                            <p className="text-slate-700 font-semibold">{bookToDelete ? bookToDelete.name : ''}</p>
+                            <button onClick={() => handleDeleteBook(bookToDelete._id)} className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 mr-2">Yes</button>
+                            <button onClick={closeDeleteBookModal} className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600">No</button>
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
-            {deleteSuccess && (
-                <div className="fixed inset-0 flex items-center justify-center z-50">
-                    <div className="fixed inset-0 bg-black opacity-50"></div>
-                    <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
-                        <p className="text-green-700">{deleteSuccessMessage}</p>
-                        <button onClick={() => setDeleteSuccess(false)} className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">Close</button>
+            {
+                deleteSuccess && (
+                    <div className="fixed inset-0 flex items-center justify-center z-50">
+                        <div className="fixed inset-0 bg-black opacity-50"></div>
+                        <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
+                            <p className="text-green-700">{deleteSuccessMessage}</p>
+                            <button onClick={() => setDeleteSuccess(false)} className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">Close</button>
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     )
 }

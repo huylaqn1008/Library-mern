@@ -15,8 +15,7 @@ export default function Search() {
     })
     const [loading, setLoading] = useState(false)
     const [books, setBooks] = useState([])
-
-    console.log(books);
+    const [showMore, setShowMore] = useState(false)
 
     useEffect(() => {
         const urlParams = new URLSearchParams(location.search)
@@ -40,11 +39,18 @@ export default function Search() {
 
         const fetchBooks = async () => {
             setLoading(true)
+            setShowMore(false)
 
             const searchQuery = urlParams.toString()
             const res = await fetch(`/api/book/get?${searchQuery}`)
 
             const data = await res.json()
+
+            if (data.length > 8) {
+                setShowMore(true)
+            } else {
+                setShowMore(false)
+            }
 
             setBooks(data)
             setLoading(false)
@@ -92,6 +98,23 @@ export default function Search() {
         const searchQuery = urlParams.toString()
 
         navigate(`/search?${searchQuery}`)
+    }
+
+    const onShowMoreClick = async () => {
+        const numberOfBooks = books.length
+        const startIndex = numberOfBooks
+        const urlParams = new URLSearchParams(location.search)
+        urlParams.set('startIndex', startIndex)
+
+        const searchQuery = urlParams.toString()
+        const res = await fetch(`/api/book/get?${searchQuery}`)
+        const data = await res.json()
+
+        if (data.length < 9) {
+            setShowMore(false)
+        }
+
+        setBooks([...books, ...data])
     }
 
     return (
@@ -157,6 +180,12 @@ export default function Search() {
                     {!loading && books && books.map((book) => {
                         return <BookItem key={book._id} book={book} />
                     })}
+
+                    {showMore && (
+                        <button onClick={onShowMoreClick} className='text-green-700 hover:underline p-7 text-center w-full'>
+                            Show more
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

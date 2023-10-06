@@ -107,8 +107,8 @@ export default function CreateBook() {
                 setError('You must upload at least one image!')
                 return
             }
-            if (+formData.buyPrice < +formData.discountPrice || +formData.rentPrice < +formData.discountPrice) {
-                setError('Discount price must be lower than buy price and rent price!')
+            if (+formData.buyPrice < +formData.discountPrice) {
+                setError('Discount price must be lower than buy price!')
                 return
             }
 
@@ -144,6 +144,7 @@ export default function CreateBook() {
                     rentPrice: 5000,
                     discountPrice: 5000
                 })
+                window.location.reload()
             }
         } catch (error) {
             setError(error.message)
@@ -169,7 +170,7 @@ export default function CreateBook() {
                         placeholder='Category'
                         id='category'
                         maxLength='62'
-                        minLength='10'
+                        minLength='5'
                         required
                         className='border p-3 rounded-lg'
                         onChange={handleChange}
@@ -180,7 +181,7 @@ export default function CreateBook() {
                         placeholder='Name'
                         id='name'
                         maxLength='62'
-                        minLength='10'
+                        minLength='5'
                         required
                         className='border p-3 rounded-lg'
                         onChange={handleChange}
@@ -191,7 +192,7 @@ export default function CreateBook() {
                         placeholder='Author'
                         id='author'
                         maxLength='62'
-                        minLength='10'
+                        minLength='5'
                         required
                         className='border p-3 rounded-lg'
                         onChange={handleChange}
@@ -227,7 +228,7 @@ export default function CreateBook() {
                                 type='number'
                                 id='quantity'
                                 min='1'
-                                max='10'
+                                max='100'
                                 required
                                 className='p-3 border border-gray-300 rounded-lg'
                                 onChange={handleChange}

@@ -180,7 +180,7 @@ export default function UpdateBook() {
                         placeholder='Category'
                         id='category'
                         maxLength='62'
-                        minLength='10'
+                        minLength='5'
                         required
                         className='border p-3 rounded-lg'
                         onChange={handleChange}
@@ -191,7 +191,7 @@ export default function UpdateBook() {
                         placeholder='Name'
                         id='name'
                         maxLength='62'
-                        minLength='10'
+                        minLength='5'
                         required
                         className='border p-3 rounded-lg'
                         onChange={handleChange}
@@ -202,7 +202,7 @@ export default function UpdateBook() {
                         placeholder='Author'
                         id='author'
                         maxLength='62'
-                        minLength='10'
+                        minLength='5'
                         required
                         className='border p-3 rounded-lg'
                         onChange={handleChange}
@@ -238,7 +238,7 @@ export default function UpdateBook() {
                                 type='number'
                                 id='quantity'
                                 min='1'
-                                max='10'
+                                max='100'
                                 required
                                 className='p-3 border border-gray-300 rounded-lg'
                                 onChange={handleChange}
