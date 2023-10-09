@@ -6,7 +6,7 @@ import { Autoplay, Navigation } from 'swiper/modules'
 import 'swiper/css/bundle'
 import { FaShare } from 'react-icons/fa'
 import { useSelector } from 'react-redux'
-import Contact from '../components/Contact'
+import Contact from './../../components/Contact';
 
 SwiperCore.use([Navigation, Autoplay])
 
@@ -88,7 +88,7 @@ export default function Book() {
             )}
             {book && !loading && !error && (
                 <div className='flex md:justify-center items-center'>
-                    <div className='flex flex-col md:flex-row md:min-h-screen'>
+                    <div className='md:flex-row md:min-h-screen'>
                         <div className='flex flex-col max-w-4xl mx-auto p-3 my-7 gap-4'>
                             <div className='flex flex-col md:flex-row'>
                                 <div className='w-1/2'>
@@ -244,6 +244,7 @@ export default function Book() {
                             <button
                                 onClick={() => setContact(true)}
                                 className='bg-yellow-500 text-black p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
+                                style={{ width: '100%' }}
                             >
                                 Contact
                             </button>

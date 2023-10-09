@@ -1,14 +1,10 @@
 import { getDownloadURL, getStorage, uploadBytesResumable, ref } from 'firebase/storage'
-import React, { useEffect, useState } from 'react'
-import { app } from '../firebase'
+import React, { useState } from 'react'
+import { app } from '../../firebase'
 import { useSelector } from 'react-redux'
-import { useNavigate, useParams } from 'react-router-dom'
 
-export default function UpdateBook() {
+export default function CreateBook() {
     const { currentUser } = useSelector(state => state.user)
-    const params = useParams()
-
-    const navigate = useNavigate()
 
     const [files, setFiles] = useState([])
     const [formData, setFormData] = useState({
@@ -31,20 +27,6 @@ export default function UpdateBook() {
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState(false)
 
-    useEffect(() => {
-        const fetchBook = async () => {
-            const bookId = params.bookId
-            const res = await fetch(`/api/book/get/${bookId}`)
-            const data = await res.json()
-            if (data.success === false) {
-                console.log(data.message)
-                return
-            }
-            setFormData(data)
-        }
-        fetchBook()
-    }, [])
-
     const handleImageSubmit = () => {
         if (files && files.length + formData.imageUrls.length <= 6) {
             if (files.length === 0) {
@@ -59,10 +41,7 @@ export default function UpdateBook() {
             }
             Promise.all(promises)
                 .then((urls) => {
-                    setFormData((prevData) => ({
-                        ...prevData,
-                        imageUrls: prevData.imageUrls.concat(urls)
-                    }))
+                    setFormData({ ...formData, imageUrls: formData.imageUrls.concat(urls) })
                     setImageUploadError(false)
                     setUploading(false)
                 })
@@ -100,22 +79,22 @@ export default function UpdateBook() {
     }
 
     const handleRemoveImage = (index) => {
-        setFormData((prevData) => ({
-            ...prevData,
-            imageUrls: prevData.imageUrls.filter((_, i) => i !== index)
-        }))
+        setFormData({
+            ...formData,
+            imageUrls: formData.imageUrls.filter((_, i) => i !== index)
+        })
     }
 
     const handleChange = (e) => {
         const { id, value, type, checked } = e.target
         if (type === 'checkbox') {
-            setFormData((prevData) => ({
-                ...prevData,
+            setFormData((prevState) => ({
+                ...prevState,
                 [id]: checked,
             }))
         } else {
-            setFormData((prevData) => ({
-                ...prevData,
+            setFormData((prevState) => ({
+                ...prevState,
                 [id]: value,
             }))
         }
@@ -124,7 +103,7 @@ export default function UpdateBook() {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            if (formData.imageUrls.length < 1) {
+            if (files.length < 1) {
                 setError('You must upload at least one image!')
                 return
             }
@@ -132,9 +111,10 @@ export default function UpdateBook() {
                 setError('Discount price must be lower than buy price!')
                 return
             }
+
             setLoading(true)
             setError(false)
-            const res = await fetch(`/api/book/update/${params.bookId}`, {
+            const res = await fetch('api/book/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -150,6 +130,21 @@ export default function UpdateBook() {
                 setError(data.message)
             } else {
                 setSuccess(true)
+                setFormData({
+                    imageUrls: [],
+                    category: '',
+                    name: '',
+                    author: '',
+                    description: '',
+                    sell: true,
+                    rent: false,
+                    offer: false,
+                    quantity: 1,
+                    buyPrice: 50000,
+                    rentPrice: 5000,
+                    discountPrice: 5000
+                })
+                window.location.reload()
             }
         } catch (error) {
             setError(error.message)
@@ -157,21 +152,16 @@ export default function UpdateBook() {
         }
     }
 
-    const handleSuccessClose = () => {
-        setSuccess(false)
-        navigate('/profile')
-    }
-
     const closeErrorCard = () => {
         setImageUploadError(false)
         setError(false)
-        handleSuccessClose()
+        setSuccess(false)
     }
 
     return (
         <main className='p-3 max-w-4xl mx-auto'>
             <h1 className='text-3xl font-semibold text-center my-7'>
-                Update a book
+                Create a book
             </h1>
             <form onSubmit={handleSubmit} className='flex flex-col sm:flex-row gap-4'>
                 <div className='flex flex-col gap-4 flex-1'>
@@ -339,8 +329,9 @@ export default function UpdateBook() {
                         })
                     }
                     <button className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>
-                        {loading ? 'Updating...' : 'Update book'}
+                        {loading ? 'Creating...' : 'Create book'}
                     </button>
+
                     {imageUploadError && (
                         <div className="fixed inset-0 flex items-center justify-center z-50">
                             <div className="fixed inset-0 bg-black opacity-50"></div>
@@ -350,6 +341,7 @@ export default function UpdateBook() {
                             </div>
                         </div>
                     )}
+
                     {error && (
                         <div className="fixed inset-0 flex items-center justify-center z-50">
                             <div className="fixed inset-0 bg-black opacity-50"></div>
@@ -359,11 +351,12 @@ export default function UpdateBook() {
                             </div>
                         </div>
                     )}
+
                     {success && (
                         <div className="fixed inset-0 flex items-center justify-center z-50">
                             <div className="fixed inset-0 bg-black opacity-50"></div>
                             <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
-                                <p className='text-green-500'>Book updated successfully!</p>
+                                <p className='text-green-500'>Book created successfully!</p>
                                 <button onClick={closeErrorCard} className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">Close</button>
                             </div>
                         </div>

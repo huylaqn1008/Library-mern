@@ -32,7 +32,7 @@ export default function Contact({ book }) {
                         Contact <span className='font-semibold'>
                             {admin.username}
                         </span> for <span className='font-semibold'>
-                            {book.name.toLowerCase()}
+                            {book.name}
                         </span>
                     </p>
                     <textarea

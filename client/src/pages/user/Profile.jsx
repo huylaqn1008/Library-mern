@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { getStorage, uploadBytesResumable, ref, getDownloadURL } from 'firebase/storage'
-import { app } from '../firebase'
-import { signOutUserFailure, signOutUserStart, signOutUserSuccess, updateUserFailure, updateUserStart, updateUserSuccess } from '../redux/User/userSlice'
+import { app } from '../../firebase'
+import { signOutUserFailure, signOutUserStart, signOutUserSuccess, updateUserFailure, updateUserStart, updateUserSuccess } from '../../redux/User/userSlice'
 
 export default function Profile() {
     const fileRef = useRef(null)
