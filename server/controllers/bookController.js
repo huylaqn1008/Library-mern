@@ -121,5 +121,4 @@ const getBooks = async (req, res, next) => {
     }
 }
 
-
 module.exports = { createBook, deleteBook, updateBook, getBook, getBooks }

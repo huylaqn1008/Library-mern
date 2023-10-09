@@ -8,7 +8,7 @@ export default function BookItem({ book }) {
                 <img
                     src={book.imageUrls[0]}
                     alt='book cover'
-                    className='sm:h-[470px] w-[300px] object-cover hover:scale-105 transition-scale duration-300'
+                    className='sm:h-[470px] sm:w-[300px] object-cover hover:scale-105 transition-scale duration-300'
                 />
             </Link>
             <div className='p-3 text-justify flex flex-col gap-2 w-full'>
@@ -22,20 +22,34 @@ export default function BookItem({ book }) {
                     {book.sell ? (
                         <p className='text-slate-500 mt-2 font-semibold items-center'>
                             {book.offer ? (
-                                <div className='text-green-600'>
-                                    {(book.buyPrice - (book.offer ? book.discountPrice : 0)).toLocaleString('vi-VN')} VNĐ / per
-                                    {book.offer && (
-                                        <p className='text-gray-500 italic'>
-                                            ({((book.discountPrice / book.buyPrice) * 100).toFixed(0)}% off)
-                                        </p>
+                                <div className='flex flex-col gap-2 text-green-600'>
+                                    <div className='flex gap-1'>
+                                        {(book.buyPrice - (book.offer ? book.discountPrice : 0)).toLocaleString('vi-VN')} VNĐ/per
+                                        {book.offer && (
+                                            <p className='text-gray-500 italic'>
+                                                ({((book.discountPrice / book.buyPrice) * 100).toFixed(0)}% off)
+                                            </p>
+                                        )}
+                                    </div>
+                                    {book.rent ? (
+                                        <p className='text-gray-500 italic'>Có cho thuê</p>
+                                    ) : (
+                                        <p className='text-gray-500 italic'>Không cho thuê</p>
                                     )}
                                 </div>
                             ) : (
-                                <div className='text-green-600'>
-                                    {(book.buyPrice - (book.offer ? book.discountPrice : 0)).toLocaleString('vi-VN')} VNĐ / per
-                                    <p className='text-gray-500 italic'>
-                                        Không giảm giá
-                                    </p>
+                                <div className='flex flex-col gap-2 text-green-600'>
+                                    <div className='flex gap-1'>
+                                        {(book.buyPrice - (book.offer ? book.discountPrice : 0)).toLocaleString('vi-VN')} VNĐ/per
+                                        <p className='text-gray-500 italic'>
+                                            (Không giảm giá)
+                                        </p>
+                                    </div>
+                                    {book.rent ? (
+                                        <p className='text-gray-500 italic'>Có cho thuê</p>
+                                    ) : (
+                                        <p className='text-gray-500 italic'>Không cho thuê</p>
+                                    )}
                                 </div>
                             )}
                         </p>
