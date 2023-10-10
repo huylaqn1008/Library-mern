@@ -1,6 +1,8 @@
 const User = require('./../models/userModel')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const otpGenerator = require('otp-generator')
+const nodemailer = require('nodemailer')
 
 const signup = async (req, res) => {
     const { username, email, password } = req.body
@@ -88,4 +90,55 @@ const signout = async (req, res, next) => {
     }
 }
 
-module.exports = { signup, signin, google, signout }
+const forgotPassword = async (req, res, next) => {
+    try {
+        const { email } = req.body
+
+        const user = await User.findOne({ email })
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' })
+        }
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString()
+
+        const hashedOTP = await bcrypt.hash(otp, 10)
+
+        user.otp = hashedOTP
+        user.otpExpiration = Date.now() + 600000
+        await user.save()
+
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.office365.com',
+            port: 587,
+            secure: false,
+            auth: {
+                user: process.env.SMTP_USERNAME,
+                pass: process.env.SMTP_PASSWORD
+            },
+            tls: {
+                rejectUnauthorized: false,
+            },
+        })
+
+        const mailOptions = {
+            from: 'garena281215@gmail.com',
+            to: user.email,
+            subject: 'OTP for Password Reset',
+            text: `Your OTP for password reset is: ${otp}`,
+        }
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.log(error)
+                return res.status(500).json({ error: 'Failed to send OTP email' })
+            }
+            console.log('OTP email sent: ' + info.response)
+            res.status(200).json({ message: 'OTP email sent' })
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { signup, signin, google, signout, forgotPassword }
