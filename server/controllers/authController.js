@@ -141,4 +141,58 @@ const forgotPassword = async (req, res, next) => {
     }
 }
 
-module.exports = { signup, signin, google, signout, forgotPassword }
+const verifyOtp = async (req, res, next) => {
+    try {
+        const { email, otp } = req.body
+
+        const user = await User.findOne({ email })
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' })
+        }
+
+        if (!user.otp || !user.otpExpiration || user.otpExpiration < Date.now()) {
+            return res.status(400).json({ error: 'OTP has expired or not generated' })
+        }
+
+        const isOtpValid = await bcrypt.compare(otp, user.otp)
+
+        if (!isOtpValid) {
+            return res.status(401).json({ error: 'Invalid OTP' })
+        }
+
+        user.otp = undefined
+        user.otpExpiration = undefined
+        await user.save()
+
+        res.status(200).json({ message: 'OTP verification successful' })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const resetPassword = async (req, res, next) => {
+    try {
+        const { email, newPassword } = req.body
+
+        const user = await User.findOne({ email })
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' })
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10)
+        user.password = hashedPassword
+
+        user.otp = undefined
+        user.otpExpiration = undefined
+
+        await user.save()
+
+        res.status(200).json({ message: 'Password reset successful' })
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { signup, signin, google, signout, forgotPassword, verifyOtp, resetPassword }

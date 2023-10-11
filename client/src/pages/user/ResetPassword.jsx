@@ -1,52 +1,69 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
-export default function ForgotPassword() {
-    const [email, setEmail] = useState('')
+export default function ResetPassword() {
+    const [newPassword, setNewPassword] = useState('')
     const [message, setMessage] = useState('')
     const [showSuccess, setShowSuccess] = useState(false)
     const [showError, setShowError] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
+    const [formValid, setFormValid] = useState(false)
 
     const navigate = useNavigate()
+
+    const location = useLocation()
+    const queryParams = new URLSearchParams(location.search)
+    const email = queryParams.get('email')
 
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        if (!email) {
-            setMessage('Please enter your email.')
+        if (!newPassword) {
+            setMessage('Please fill out all required fields.')
+            setShowError(true)
+            return
+        }
+
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{9,}$/
+        if (!passwordRegex.test(newPassword)) {
+            setMessage(
+                'Password must have at least 9 characters, including at least one lowercase letter, one uppercase letter, one digit, and one special character.'
+            )
             setShowError(true)
             return
         }
 
         try {
-            const response = await fetch('/api/auth/forgotPassword', {
+            const response = await fetch('/api/auth/resetPassword', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email }),
+                body: JSON.stringify({ email, newPassword }),
             })
 
-            const data = await response.json()
-
             if (response.ok) {
-                setMessage('Verification code sent successfully. Please check your email.')
+                setMessage('Reset password successful')
                 setShowSuccess(true)
-                setShowError(false)
             } else {
-                setMessage(data.error)
+                const errorData = await response.json()
+                setMessage(errorData.error)
                 setShowError(true)
             }
         } catch (error) {
-            console.log(error)
-            setMessage('Failed to send the verification code')
+            console.error('Error:', error)
+            setMessage('An error occurred. Please try again later.')
             setShowError(true)
         }
     }
 
+    const toggleShowPassword = () => {
+        setShowPassword(!showPassword)
+    }
+
     const closeSuccessCard = () => {
         setShowSuccess(false)
-        navigate(`/verifyotp?email=${email}`)
+        navigate('/signin')
     }
 
     const closeErrorCard = () => {
@@ -55,21 +72,30 @@ export default function ForgotPassword() {
 
     return (
         <div className='p-3 max-w-lg mx-auto'>
-            <h1 className='text-3xl text-center font-semibold my-7'>Forgot password</h1>
+            <h1 className='text-3xl text-center font-semibold my-7'>Reset password for {email}</h1>
             <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
-                <input
-                    type='email'
-                    id='email'
-                    placeholder='Enter your email...'
-                    className='border p-3 rounded-lg'
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
+                <div className="mb-4 flex items-center relative">
+                    <input
+                        type={showPassword ? 'text' : 'password'}
+                        id='password'
+                        placeholder='Enter your password...'
+                        className='border p-3 rounded-lg'
+                        style={{ width: '100%' }}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                    />
+                    <span
+                        onClick={toggleShowPassword}
+                        className="absolute right-0 top-0 mt-3 mr-3 cursor-pointer"
+                    >
+                        {showPassword ? 'Hide' : 'Show'}
+                    </span>
+                </div>
                 <button
                     type='submit'
                     className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
                 >
-                    Send code
+                    Reset Password
                 </button>
             </form>
 

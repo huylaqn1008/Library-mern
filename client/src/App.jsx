@@ -11,6 +11,8 @@ import CreateBook from './pages/book/CreateBook';
 import UpdateBook from './pages/book/UpdateBook';
 import ForgotPassword from './pages/user/ForgotPassword';
 import Book from "./pages/book/Book"
+import VerifyOtp from "./pages/user/VerifyOtp"
+import ResetPassword from "./pages/user/ResetPassword"
 
 export default function App() {
   return (
@@ -27,6 +29,8 @@ export default function App() {
           <Route path="/update-book/:bookId" element={<UpdateBook />} />
         </Route>
         <Route path="/forgotpassword" element={<ForgotPassword />} />
+        <Route path="/verifyotp" element={<VerifyOtp />} />
+        <Route path="/resetpassword" element={<ResetPassword />} />
         <Route path="/book/:bookId" element={<Book />} />
         <Route path="/search" element={<Search />} />
       </Routes>
