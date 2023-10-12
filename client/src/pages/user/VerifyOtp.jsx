@@ -81,7 +81,7 @@ export default function VerifyOtp() {
 
     const closeSuccessCard = () => {
         setShowSuccess(false)
-        navigate(`/resetpassword?email=${email}`)
+        navigate(`/resetpassword?email=${email}&otp=${otp}`)
     }
 
     const closeErrorCard = () => {

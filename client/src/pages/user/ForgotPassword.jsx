@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 export default function ForgotPassword() {
     const [email, setEmail] = useState('')
     const [message, setMessage] = useState('')
+    const [loading, setLoading] = useState(false)
     const [showSuccess, setShowSuccess] = useState(false)
     const [showError, setShowError] = useState(false)
 
@@ -19,6 +20,8 @@ export default function ForgotPassword() {
         }
 
         try {
+            setLoading(true)
+
             const response = await fetch('/api/auth/forgotPassword', {
                 method: 'POST',
                 headers: {
@@ -31,14 +34,17 @@ export default function ForgotPassword() {
 
             if (response.ok) {
                 setMessage('Verification code sent successfully. Please check your email.')
+                setLoading(false)
                 setShowSuccess(true)
                 setShowError(false)
             } else {
+                setLoading(false)
                 setMessage(data.error)
                 setShowError(true)
             }
         } catch (error) {
             console.log(error)
+            setLoading(false)
             setMessage('Failed to send the verification code')
             setShowError(true)
         }
@@ -46,6 +52,7 @@ export default function ForgotPassword() {
 
     const closeSuccessCard = () => {
         setShowSuccess(false)
+        setLoading(false)
         navigate(`/verifyotp?email=${email}`)
     }
 
@@ -66,10 +73,11 @@ export default function ForgotPassword() {
                     onChange={(e) => setEmail(e.target.value)}
                 />
                 <button
+                    disabled={loading}
                     type='submit'
                     className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
                 >
-                    Send code
+                    {loading ? 'Sending...' : 'Send code'}
                 </button>
             </form>
 

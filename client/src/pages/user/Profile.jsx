@@ -100,7 +100,8 @@ export default function Profile() {
             formData.email === currentUser.email &&
             formData.phoneNumber === currentUser.phoneNumber &&
             formData.gender === currentUser.gender &&
-            formData.address === currentUser.address
+            formData.address === currentUser.address &&
+            formData.avatar === currentUser.avatar
         ) {
             setUpdateError("No changes to update.")
             return
@@ -259,6 +260,7 @@ export default function Profile() {
             <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
                 <input onChange={(e) => setFile(e.target.files[0])} type='file' ref={fileRef} hidden accept='image/*' />
                 <img
+                    onChange={handlChange}
                     onClick={() => fileRef.current.click()}
                     src={formData.avatar || currentUser.avatar}
                     alt='profile'

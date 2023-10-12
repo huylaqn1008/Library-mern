@@ -161,8 +161,6 @@ const verifyOtp = async (req, res, next) => {
             return res.status(401).json({ error: 'Invalid OTP' })
         }
 
-        user.otp = undefined
-        user.otpExpiration = undefined
         await user.save()
 
         res.status(200).json({ message: 'OTP verification successful' })
@@ -173,7 +171,7 @@ const verifyOtp = async (req, res, next) => {
 
 const resetPassword = async (req, res, next) => {
     try {
-        const { email, newPassword } = req.body
+        const { email, otp, newPassword } = req.body
 
         const user = await User.findOne({ email })
 
@@ -181,11 +179,22 @@ const resetPassword = async (req, res, next) => {
             return res.status(404).json({ error: 'User not found' })
         }
 
+        if (!email || !otp || !newPassword) {
+            return res.status(400).json({ error: 'Missing required data' })
+        }
+
+        if (!user.otp || !user.otpExpiration || user.otpExpiration < Date.now()) {
+            return res.status(400).json({ error: 'OTP has expired or not generated' })
+        }
+
+        const isOtpValid = await bcrypt.compare(otp, user.otp)
+
+        if (!isOtpValid) {
+            return res.status(401).json({ error: 'Invalid OTP' })
+        }
+
         const hashedPassword = await bcrypt.hash(newPassword, 10)
         user.password = hashedPassword
-
-        user.otp = undefined
-        user.otpExpiration = undefined
 
         await user.save()
 

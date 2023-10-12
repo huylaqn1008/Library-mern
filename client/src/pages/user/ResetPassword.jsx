@@ -7,13 +7,13 @@ export default function ResetPassword() {
     const [showSuccess, setShowSuccess] = useState(false)
     const [showError, setShowError] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
-    const [formValid, setFormValid] = useState(false)
 
     const navigate = useNavigate()
 
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
     const email = queryParams.get('email')
+    const otp = queryParams.get('otp')
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -39,7 +39,7 @@ export default function ResetPassword() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, newPassword }),
+                body: JSON.stringify({ email, otp, newPassword }),
             })
 
             if (response.ok) {
