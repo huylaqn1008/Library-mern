@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore from 'swiper'
 import { Autoplay, Navigation } from 'swiper/modules'
 import 'swiper/css/bundle'
 import { FaShare } from 'react-icons/fa'
-import { useSelector } from 'react-redux'
-import Contact from './../../components/Contact';
+import { useDispatch, useSelector } from 'react-redux'
+import Contact from './../../components/Contact'
+import { setBookDetails, setRentalDetails } from '../../redux/Book/bookSlice'
 
 SwiperCore.use([Navigation, Autoplay])
 
@@ -14,18 +15,34 @@ export default function Book() {
     SwiperCore.use([Navigation])
 
     const params = useParams()
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const currentUser = useSelector((state) => state.user.currentUser)
 
     const [book, setBook] = useState()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
+
+    const [quantity, setQuantity] = useState(1)
+    const [totalPrice, setTotalPrice] = useState(0)
+    const [showBuyPrice, setShowBuyPrice] = useState(false)
+    const [paymentBuyConfirmed, setPaymentBuyConfirmed] = useState(false)
+
+    const [rentStartDate, setRentStartDate] = useState(new Date())
+    const [rentEndDate, setRentEndDate] = useState(new Date())
     const [showRentPrice, setShowRentPrice] = useState(false)
-    const [rentalDuration, setRentalDuration] = useState(1)
-    const [showTotalPrice, setShowTotalPrice] = useState(false)
+    const [rentalDurationError, setRentalDurationError] = useState(false)
+    const [paymentRentConfirmed, setPaymentRentConfirmed] = useState(false)
+    const [rentalPrice, setRentalPrice] = useState(0)
+    const [errorDayToday, setErrorDayToday] = useState(false)
+    const [errorDayRentLimit, setErrorDayRentLimit] = useState(false)
+
     const [copied, setCopied] = useState(false)
     const [showMore, setShowMore] = useState(false)
     const [contact, setContact] = useState(false)
+
+    const rentalDuration = Math.ceil((rentEndDate - rentStartDate) / (1000 * 60 * 60 * 24))
 
     useEffect(() => {
         const fetchBook = async () => {
@@ -55,16 +72,103 @@ export default function Book() {
         setShowRentPrice(true)
     }
 
-    const handleRentalDurationChange = (e) => {
-        setRentalDuration(parseInt(e.target.value))
+    const handleRentStartDateChange = (e) => {
+        const startDate = new Date(e.target.value)
+
+        const selectedDate = new Date(e.target.value)
+        const today = new Date()
+
+        if (selectedDate < today) {
+            setErrorDayToday("The rental start date cannot be a past date. Please select today or a future date.")
+            setPaymentRentConfirmed(false)
+            return
+        } else {
+            setErrorDayToday(false)
+        }
+
+        const maxAllowedDate = new Date()
+        maxAllowedDate.setDate(today.getDate() + 7)
+
+        if (selectedDate < today || selectedDate > maxAllowedDate) {
+            setErrorDayRentLimit("The rental start date should be within 7 days from today.")
+            setPaymentRentConfirmed(false)
+            return
+        } else {
+            setErrorDayRentLimit(false)
+        }
+
+        setRentStartDate(startDate)
+        const endDate = new Date(startDate)
+        endDate.setDate(endDate.getDate() + 5)
+        setRentEndDate(endDate)
+    }
+
+    const handleRentEndDateChange = (e) => {
+        const endDate = new Date(e.target.value)
+        setRentEndDate(endDate)
     }
 
     const handleRentConfirm = () => {
-        setShowTotalPrice(true)
+        const rentalDuration = Math.ceil((rentEndDate - rentStartDate) / (1000 * 60 * 60 * 24))
+
+        if (rentalDuration < 5) {
+            setRentalDurationError(true)
+            setPaymentRentConfirmed(false)
+            return
+        } else {
+            setRentalDurationError(false)
+            setPaymentRentConfirmed(true)
+        }
+
+        const totalPrice = book.rentPrice * rentalDuration
+        setRentalPrice(totalPrice)
+
+        dispatch(setRentalDetails({
+            startDate: rentStartDate,
+            endDate: rentEndDate,
+            totalPrice: totalPrice
+        }))
+
+        dispatch(setBookDetails({
+            bookTitle: book.name,
+            authorName: book.author,
+            category: book.category,
+            images: book.imageUrls
+        }))
     }
 
-    const calculateTotalPrice = () => {
-        return book.rentPrice * rentalDuration
+    const handlePaymentRent = () => {
+        setPaymentRentConfirmed(false)
+        navigate('/payment-rent')
+    }
+
+    const handleQuantityChange = (e) => {
+        const newQuantity = parseInt(e.target.value)
+        if (newQuantity > 0 && newQuantity <= 10) {
+            setQuantity(newQuantity)
+        }
+    }
+
+    const handleConfirmBuy = () => {
+        if (book.offer == true) {
+            const totalPrice = (book.buyPrice - book.discountPrice) * quantity
+            setTotalPrice(totalPrice)
+            setPaymentBuyConfirmed(true)
+        } else {
+            const totalPrice = book.buyPrice * quantity
+            setTotalPrice(totalPrice)
+            setPaymentBuyConfirmed(true)
+        }
+
+    }
+
+    const handleBuyClick = () => {
+        setShowBuyPrice(true)
+    }
+
+    const handlePaymentBuy = () => {
+        setPaymentBuyConfirmed(false)
+        navigate('/payment-buy')
     }
 
     const handleShareClick = () => {
@@ -77,6 +181,7 @@ export default function Book() {
     }
 
     const closeErrorCard = () => {
+        setShowBuyPrice(false)
         setShowRentPrice(false)
     }
 
@@ -177,13 +282,64 @@ export default function Book() {
                                         </div>
                                         <div className='flex flex-col gap-2'>
                                             {book.sell && (
-                                                <button
-                                                    className='bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
-                                                    style={{ width: '100%' }}
-                                                >
-                                                    Buy
-                                                </button>
+                                                <div>
+                                                    <button
+                                                        className='bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
+                                                        style={{ width: '100%' }}
+                                                        onClick={handleBuyClick}
+                                                    >
+                                                        Buy
+                                                    </button>
+                                                </div>
                                             )}
+                                            {showBuyPrice && (
+                                                <div className='fixed inset-0 flex items-center justify-center z-50'>
+                                                    <div className='fixed inset-0 bg-black opacity-50'></div>
+                                                    <div className='w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10'>
+                                                        <div className='flex flex-col'>
+                                                            <label htmlFor='quantity' className='text-2xl italic font-bold mb-2'>
+                                                                Quantity:
+                                                            </label>
+                                                            <input
+                                                                onChange={handleQuantityChange}
+                                                                type='number'
+                                                                id='quantity'
+                                                                min='1'
+                                                                max='10'
+                                                                value={quantity}
+                                                                style={{ border: '1px solid black', borderRadius: '10px', textAlign: 'center' }}
+                                                            />
+                                                            {!paymentBuyConfirmed ? (
+                                                                <button
+                                                                    className='mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-700'
+                                                                    onClick={handleConfirmBuy}
+                                                                >
+                                                                    Confirm buy
+                                                                </button>
+                                                            ) : (
+                                                                <button
+                                                                    className='mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-700'
+                                                                    onClick={handlePaymentBuy}
+                                                                >
+                                                                    Payment
+                                                                </button>
+                                                            )}
+                                                            <button
+                                                                className='mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600'
+                                                                onClick={closeErrorCard}
+                                                            >
+                                                                Close
+                                                            </button>
+                                                            {totalPrice > 0 && (
+                                                                <p className='text-lg mt-5 font-semibold'>
+                                                                    Total Price: {totalPrice.toLocaleString('vi-VN')} VNĐ
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
                                             {book.rent && !showRentPrice && (
                                                 <button
                                                     className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
@@ -202,34 +358,74 @@ export default function Book() {
                                                                 <p className='text-lg font-semibold'>
                                                                     Rental Price: {book.rentPrice.toLocaleString('vi-VN')} VNĐ (VNĐ/per/day)
                                                                 </p>
-                                                                <input
-                                                                    type='number'
-                                                                    min='1'
-                                                                    max='30'
-                                                                    value={rentalDuration}
-                                                                    onChange={handleRentalDurationChange}
-                                                                />
-                                                                <div className='flex justify-between gap-5'>
+                                                                <div className='flex flex-col gap-4'>
+                                                                    <label htmlFor='startDate'>Start Date:</label>
+                                                                    <input
+                                                                        type='date'
+                                                                        id='startDate'
+                                                                        value={rentStartDate.toISOString().split('T')[0]}
+                                                                        onChange={handleRentStartDateChange}
+                                                                    />
+                                                                    <label htmlFor='endDate'>End Date:</label>
+                                                                    <input
+                                                                        type='date'
+                                                                        id='endDate'
+                                                                        value={rentEndDate.toISOString().split('T')[0]}
+                                                                        onChange={handleRentEndDateChange}
+                                                                    />
+                                                                </div>
+                                                                {!paymentRentConfirmed ? (
                                                                     <button
-                                                                        className='mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600'
+                                                                        className='mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-700'
                                                                         onClick={handleRentConfirm}
-                                                                        style={{ width: '50%' }}
                                                                     >
                                                                         Confirm Rental
                                                                     </button>
+                                                                ) : (
                                                                     <button
-                                                                        onClick={closeErrorCard}
-                                                                        className='mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-green-600'
-                                                                        style={{ width: '50%' }}
+                                                                        className='mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-700'
+                                                                        onClick={handlePaymentRent}
                                                                     >
-                                                                        Close
+                                                                        Payment
                                                                     </button>
-                                                                </div>
-                                                                {showTotalPrice && (
-                                                                    <p className='text-lg font-semibold'>
-                                                                        Total Price: {calculateTotalPrice().toLocaleString('vi-VN')} VNĐ
-                                                                    </p>
                                                                 )}
+                                                                <button
+                                                                    className='mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600'
+                                                                    onClick={closeErrorCard}
+                                                                >
+                                                                    Close
+                                                                </button>
+
+                                                                <div className='mt-5'>
+                                                                    {rentalPrice > 0 && (
+                                                                        <div>
+                                                                            <p className='text-lg font-semibold'>
+                                                                                Total Price: {rentalPrice.toLocaleString('vi-VN')} VNĐ
+                                                                            </p>
+                                                                            <p className='text-lg'>
+                                                                                Want to rent this book for {rentalDuration} days?
+                                                                            </p>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {rentalDurationError && (
+                                                                        <p className='text-red-500 text-lg font-semibold'>
+                                                                            The rental duration should be at least 5 days.
+                                                                        </p>
+                                                                    )}
+
+                                                                    {errorDayToday && (
+                                                                        <p className='text-red-500 text-lg font-semibold'>
+                                                                            {errorDayToday}
+                                                                        </p>
+                                                                    )}
+
+                                                                    {errorDayRentLimit && (
+                                                                        <p className='text-red-500 text-lg font-semibold'>
+                                                                            {errorDayRentLimit}
+                                                                        </p>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>

@@ -13,7 +13,7 @@ export default function Profile() {
     const [filePerc, setFilePerc] = useState(0)
     const [fileUploadError, setFileUploadError] = useState(false)
     const [formData, setFormData] = useState({
-        username: currentUser.username || '', // Initialize with the user's username or an empty string
+        username: currentUser.username || '',
         email: currentUser.email,
     })
     const [updateSuccess, setUpdateSuccess] = useState(false)
@@ -325,18 +325,27 @@ export default function Profile() {
                         </div>
                     ) : 'Update'}
                 </button>
-                <Link to={'/create-book'} className='bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95'>
-                    Create book
-                </Link>
+                {currentUser.role === 0 && (
+                    <Link to={'/create-book'} className='bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95'>
+                        Create book
+                    </Link>
+                )}
+                {currentUser.role === 0 && (
+                    <Link to={'/dashboard'} className='bg-blue-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95'>
+                        Dashboard
+                    </Link>
+                )}
             </form>
 
             <div className='flex justify-between mt-5'>
                 <span onClick={handleSignOut} className='text-red-700 cursor-pointer'>Sign out</span>
             </div>
 
-            <button onClick={handleShowBooks} className='text-green-700 w-full'>
-                {showBooks ? 'Hide Your Books Create' : 'Show Your Books Create'}
-            </button>
+            {currentUser.role === 0 && (
+                <button onClick={handleShowBooks} className='text-green-700 w-full'>
+                    {showBooks ? 'Hide Your Books' : 'Show Your Books'}
+                </button>
+            )}
             <p className='text-red-700 mt-5'>
                 {showBooksError ? 'Error showing listings' : ''}
             </p>

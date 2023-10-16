@@ -13,6 +13,9 @@ import ForgotPassword from './pages/user/ForgotPassword';
 import Book from "./pages/book/Book"
 import VerifyOtp from "./pages/user/VerifyOtp"
 import ResetPassword from "./pages/user/ResetPassword"
+import Dashboard from "./pages/admin/Dashboard"
+import RentPayment from "./pages/payment/RentPayment"
+import BuyPayment from "./pages/payment/BuyPayment"
 
 export default function App() {
   return (
@@ -33,6 +36,9 @@ export default function App() {
         <Route path="/resetpassword" element={<ResetPassword />} />
         <Route path="/book/:bookId" element={<Book />} />
         <Route path="/search" element={<Search />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/payment-rent" element={<RentPayment />} />
+        <Route path="/payment-buy" element={<BuyPayment />} />
       </Routes>
     </BrowserRouter>
   )
