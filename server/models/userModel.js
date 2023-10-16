@@ -34,6 +34,11 @@ const userSchema = new mongoose.Schema({
     },
     otpExpiration: {
         type: Date,
+    },
+    role: {
+        type: Number,
+        default: 1,
+        enum: [0, 1]
     }
 }, { timestamps: true })
 

@@ -20,7 +20,10 @@ const signup = async (req, res) => {
     const hashedPassword = await bcrypt.hashSync(password, 10)
 
     const newUser = new User({
-        username, email, password: hashedPassword
+        username,
+        email,
+        password: hashedPassword,
+        role: 1
     })
 
     try {
