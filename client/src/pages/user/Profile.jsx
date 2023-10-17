@@ -335,6 +335,9 @@ export default function Profile() {
                         Dashboard
                     </Link>
                 )}
+                <Link to={'/history'} className='bg-yellow-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95'>
+                    History
+                </Link>
             </form>
 
             <div className='flex justify-between mt-5'>

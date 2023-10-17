@@ -16,6 +16,7 @@ import ResetPassword from "./pages/user/ResetPassword"
 import Dashboard from "./pages/admin/Dashboard"
 import RentPayment from "./pages/payment/RentPayment"
 import BuyPayment from "./pages/payment/BuyPayment"
+import Hitory from "./pages/user/Hitory"
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/payment-rent" element={<RentPayment />} />
         <Route path="/payment-buy" element={<BuyPayment />} />
+        <Route path="/history" element={<Hitory />} />
       </Routes>
     </BrowserRouter>
   )
