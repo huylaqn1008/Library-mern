@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { FaSearch } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { BiShoppingBag } from 'react-icons/bi'
+import { totalQuantity } from '../redux/Book/bookSlice'
 
 export default function Header() {
     const { currentUser } = useSelector(state => state.user)
+
+    const { cartTotalQuantity } = useSelector((state) => state.book)
+
+    const dispatch = useDispatch()
+    useEffect(() => {
+        dispatch(totalQuantity())
+    }, [dispatch])
 
     const navigate = useNavigate()
 
@@ -55,6 +64,12 @@ export default function Header() {
                     </Link>
                     <Link to='/about'>
                         <li className='hidden sm:inline text-slate-700 hover:underline'>About</li>
+                    </Link>
+                    <Link to='/cart' className='relative cursor-pointer mr-10'>
+                        <BiShoppingBag className='text-2xl opacity-80' />
+                        <div className='absolute w-4 h-4 rounded-full z-10 -bottom-1 -right-1 flex items-center justify-center text-[10px] bg-black text-white'>
+                            {cartTotalQuantity}
+                        </div>
                     </Link>
                     <Link to='/profile'> {
                         currentUser ? (

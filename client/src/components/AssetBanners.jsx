@@ -21,8 +21,8 @@ export default function AssetBanners() {
         <Swiper navigation loop autoplay={{ delay: 5000 }}>
             {images.map((imageUrl, index) => (
                 <SwiperSlide key={index}>
-                    <div className='h-screen flex items-center justify-center'>
-                        <img src={imageUrl} alt={`Image ${index + 1}`} className='h-[700px] w-[1200px]' />
+                    <div className='flex items-center justify-center'>
+                        <img src={imageUrl} alt={`Image ${index + 1}`} className='h-[700px] w-full' />
                     </div>
                 </SwiperSlide>
             ))}

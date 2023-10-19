@@ -49,7 +49,9 @@ export default function Home() {
 
     return (
         <div>
-            <div className='flex flex-col gap-6 p-15 px-3 max-w-6xl mx-auto'>
+            <AssetBanners />
+
+            <div className='flex flex-col gap-6 p-15 px-3 max-w-6xl mx-auto mt-4'>
                 <h1 className='text-slate-700 font-bold text-3xl lg:text-6xl'>
                     Find books that suit <span className='text-gray-500'>your interests</span>
                     <br />
@@ -64,8 +66,6 @@ export default function Home() {
                     Let's get started...
                 </Link>
             </div>
-
-            <AssetBanners />
 
             <div className='mx-auto p-3 flex flex-col gap-8'>
                 {rentBooks && rentBooks.length > 0 && (

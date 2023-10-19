@@ -1,4 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { ToastContainer } from 'react-toastify'
+
+import "react-toastify/dist/ReactToastify.css"
+
 import Home from "./pages/Home"
 import About from "./pages/About"
 import Header from "./components/Header"
@@ -15,12 +19,13 @@ import VerifyOtp from "./pages/user/VerifyOtp"
 import ResetPassword from "./pages/user/ResetPassword"
 import Dashboard from "./pages/admin/Dashboard"
 import RentPayment from "./pages/payment/RentPayment"
-import BuyPayment from "./pages/payment/BuyPayment"
 import Hitory from "./pages/user/Hitory"
+import ShoppingCart from "./pages/payment/ShoppingCart"
 
 export default function App() {
   return (
     <BrowserRouter>
+      <ToastContainer />
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -31,16 +36,16 @@ export default function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/create-book" element={<CreateBook />} />
           <Route path="/update-book/:bookId" element={<UpdateBook />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/history" element={<Hitory />} />
         </Route>
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/verifyotp" element={<VerifyOtp />} />
         <Route path="/resetpassword" element={<ResetPassword />} />
         <Route path="/book/:bookId" element={<Book />} />
         <Route path="/search" element={<Search />} />
-        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/payment-rent" element={<RentPayment />} />
-        <Route path="/payment-buy" element={<BuyPayment />} />
-        <Route path="/history" element={<Hitory />} />
+        <Route path="/cart" element={<ShoppingCart />} />
       </Routes>
     </BrowserRouter>
   )

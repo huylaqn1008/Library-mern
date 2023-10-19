@@ -7,7 +7,7 @@ import 'swiper/css/bundle'
 import { FaShare } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import Contact from './../../components/Contact'
-import { setBookDetails, setRentalDetails } from '../../redux/Book/bookSlice'
+import { setAddCart, setBookDetails, setRentalDetails } from '../../redux/Book/bookSlice'
 
 SwiperCore.use([Navigation, Autoplay])
 
@@ -23,11 +23,6 @@ export default function Book() {
     const [book, setBook] = useState()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
-
-    const [quantity, setQuantity] = useState(1)
-    const [totalPrice, setTotalPrice] = useState(0)
-    const [showBuyPrice, setShowBuyPrice] = useState(false)
-    const [paymentBuyConfirmed, setPaymentBuyConfirmed] = useState(false)
 
     const [rentStartDate, setRentStartDate] = useState(new Date())
     const [rentEndDate, setRentEndDate] = useState(new Date())
@@ -142,35 +137,6 @@ export default function Book() {
         navigate('/payment-rent')
     }
 
-    const handleQuantityChange = (e) => {
-        const newQuantity = parseInt(e.target.value)
-        if (newQuantity > 0 && newQuantity <= 10) {
-            setQuantity(newQuantity)
-        }
-    }
-
-    const handleConfirmBuy = () => {
-        if (book.offer == true) {
-            const totalPrice = (book.buyPrice - book.discountPrice) * quantity
-            setTotalPrice(totalPrice)
-            setPaymentBuyConfirmed(true)
-        } else {
-            const totalPrice = book.buyPrice * quantity
-            setTotalPrice(totalPrice)
-            setPaymentBuyConfirmed(true)
-        }
-
-    }
-
-    const handleBuyClick = () => {
-        setShowBuyPrice(true)
-    }
-
-    const handlePaymentBuy = () => {
-        setPaymentBuyConfirmed(false)
-        navigate('/payment-buy')
-    }
-
     const handleShareClick = () => {
         navigator.clipboard.writeText(window.location.href)
         setCopied(true)
@@ -181,8 +147,11 @@ export default function Book() {
     }
 
     const closeErrorCard = () => {
-        setShowBuyPrice(false)
         setShowRentPrice(false)
+    }
+
+    const handleAddToCart = (book) => {
+        dispatch(setAddCart(book))
     }
 
     return (
@@ -284,59 +253,12 @@ export default function Book() {
                                             {book.sell && (
                                                 <div>
                                                     <button
+                                                        onClick={() => handleAddToCart(book)}
                                                         className='bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
                                                         style={{ width: '100%' }}
-                                                        onClick={handleBuyClick}
                                                     >
-                                                        Buy
+                                                        Add to cart
                                                     </button>
-                                                </div>
-                                            )}
-                                            {showBuyPrice && (
-                                                <div className='fixed inset-0 flex items-center justify-center z-50'>
-                                                    <div className='fixed inset-0 bg-black opacity-50'></div>
-                                                    <div className='w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10'>
-                                                        <div className='flex flex-col'>
-                                                            <label htmlFor='quantity' className='text-2xl italic font-bold mb-2'>
-                                                                Quantity:
-                                                            </label>
-                                                            <input
-                                                                onChange={handleQuantityChange}
-                                                                type='number'
-                                                                id='quantity'
-                                                                min='1'
-                                                                max='10'
-                                                                value={quantity}
-                                                                style={{ border: '1px solid black', borderRadius: '10px', textAlign: 'center' }}
-                                                            />
-                                                            {!paymentBuyConfirmed ? (
-                                                                <button
-                                                                    className='mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-700'
-                                                                    onClick={handleConfirmBuy}
-                                                                >
-                                                                    Confirm buy
-                                                                </button>
-                                                            ) : (
-                                                                <button
-                                                                    className='mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-700'
-                                                                    onClick={handlePaymentBuy}
-                                                                >
-                                                                    Payment
-                                                                </button>
-                                                            )}
-                                                            <button
-                                                                className='mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600'
-                                                                onClick={closeErrorCard}
-                                                            >
-                                                                Close
-                                                            </button>
-                                                            {totalPrice > 0 && (
-                                                                <p className='text-lg mt-5 font-semibold'>
-                                                                    Total Price: {totalPrice.toLocaleString('vi-VN')} VNĐ
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                    </div>
                                                 </div>
                                             )}
 

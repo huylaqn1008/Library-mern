@@ -26,56 +26,64 @@ const History = () => {
     {
       field: 'bookTitle',
       headerName: <strong>Book Title</strong>,
-      width: 280,
+      width: 300,
       editable: true,
     },
     {
       field: 'authorName',
       headerName: <strong>Author Name</strong>,
-      width: 150,
+      width: 200,
       editable: true,
     },
     {
       field: 'rentalStartDate',
       headerName: <strong>Rental Start Date</strong>,
       type: 'date',
-      width: 130,
+      width: 160,
       valueGetter: (params) => {
-        const dateValue = new Date(params.value);
-        return isNaN(dateValue) ? null : dateValue;
+        const dateValue = new Date(params.value)
+        return isNaN(dateValue) ? null : dateValue
       },
       valueFormatter: (params) => {
-        const dateValue = new Date(params.value);
-        return isNaN(dateValue) ? '' : dateValue.toLocaleDateString();
-      },
+        const dateValue = new Date(params.value)
+        return isNaN(dateValue) ? '' : dateValue.toLocaleDateString()
+      }
     },
     {
       field: 'rentalEndDate',
       headerName: <strong>Rental End Date</strong>,
       type: 'date',
-      width: 130,
+      width: 160,
       valueGetter: (params) => {
-        const dateValue = new Date(params.value);
-        return isNaN(dateValue) ? null : dateValue;
+        const dateValue = new Date(params.value)
+        return isNaN(dateValue) ? null : dateValue
       },
       valueFormatter: (params) => {
-        const dateValue = new Date(params.value);
-        return isNaN(dateValue) ? '' : dateValue.toLocaleDateString();
-      },
+        const dateValue = new Date(params.value)
+        return isNaN(dateValue) ? '' : dateValue.toLocaleDateString()
+      }
     },
     {
       field: 'rentalTotalPrice',
       headerName: <strong>Total Price</strong>,
-      type: 'number',
-      width: 110,
+      width: 145,
       editable: true,
     },
     {
       field: 'rentalStatus',
       headerName: <strong>Rental Status</strong>,
-      width: 110,
+      width: 145,
       editable: true,
-    },
+      valueFormatter: (params) => {
+        if (params.value === 'Active') {
+          return 'Renting'
+        } else if (params.value === 'Pending') {
+          return 'Refunded'
+        } else {
+          return params.value
+        }
+      }
+    }
   ]
 
   const rows = rentPayments.map(rentPayment => ({
@@ -90,7 +98,7 @@ const History = () => {
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', height: '100vh' }}>
-      <div style={{ width: '50%' }}>
+      <div style={{ width: '60%' }}>
         <h1 className='text-3xl font-semibold text-center my-7'>Rental Payment History</h1>
         <Box sx={{ height: 400, width: '100%' }}>
           <DataGrid
