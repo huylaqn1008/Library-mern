@@ -29,7 +29,7 @@ const ShoppingCart = () => {
         dispatch(increaseCart(itemId))
     }
 
-    const handleClearCart = (itemId) => {
+    const handleClearCart = () => {
         dispatch(cartClear())
     }
 

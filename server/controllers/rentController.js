@@ -98,7 +98,6 @@ const getRentPayment = async (req, res, next) => {
     }
 }
 
-// API endpoint to get all rent payments
 const getAllRentPayments = async (req, res, next) => {
     try {
         const rentPayments = await RentPayment.find()

@@ -21,6 +21,8 @@ import Dashboard from "./pages/admin/Dashboard"
 import RentPayment from "./pages/payment/RentPayment"
 import Hitory from "./pages/user/Hitory"
 import ShoppingCart from "./pages/payment/ShoppingCart"
+import BuyPayment from "./pages/payment/BuyPayment"
+import Thankyou from "./components/Thankyou"
 
 export default function App() {
   return (
@@ -44,8 +46,10 @@ export default function App() {
         <Route path="/resetpassword" element={<ResetPassword />} />
         <Route path="/book/:bookId" element={<Book />} />
         <Route path="/search" element={<Search />} />
+        <Route path="/payment-buy" element={<BuyPayment />} />
         <Route path="/payment-rent" element={<RentPayment />} />
         <Route path="/cart" element={<ShoppingCart />} />
+        <Route path="/thank-you" element={<Thankyou />} />
       </Routes>
     </BrowserRouter>
   )

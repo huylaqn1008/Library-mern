@@ -124,7 +124,7 @@ export default function RentPayment() {
           </div>
           {timeRemaining > 0 && (
             <div className="text-2xl font-semibold">
-              Time Remaining: {formatTime(timeRemaining)}
+              Time for you to pay: {formatTime(timeRemaining)}
             </div>
           )}
           {timeExpert && (

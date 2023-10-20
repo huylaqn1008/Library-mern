@@ -7,6 +7,7 @@ const userRouter = require('./routes/userRoute')
 const authRouter = require('./routes/authRoute')
 const bookRouter = require('./routes/bookRoute')
 const rentPaymentRoute = require('./routes/rentRoute')
+const buyPaymentRoute = require('./routes/buyRoute')
 
 const app = express()
 
@@ -25,6 +26,7 @@ app.use('/api/user', userRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/book', bookRouter)
 app.use('/api/rent', rentPaymentRoute)
+app.use('/api/buy', buyPaymentRoute)
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500

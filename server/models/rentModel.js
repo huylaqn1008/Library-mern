@@ -44,6 +44,6 @@ const rentPaymentSchema = new mongoose.Schema({
     }
 })
 
-const RentPayment = mongoose.model('rentpayment', rentPaymentSchema)
+const RentPayment = mongoose.model('Rentpayment', rentPaymentSchema)
 
 module.exports = { RentPayment }
