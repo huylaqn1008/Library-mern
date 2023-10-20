@@ -118,6 +118,11 @@ const bookSlice = createSlice({
 
             localStorage.setItem("cartItems", JSON.stringify(state.cartItems))
         },
+        cartClearWhenBuy(state) {
+            state.cartItems = []
+
+            localStorage.setItem("cartItems", JSON.stringify(state.cartItems))
+        },
         totalQuantity: (state) => {
             state.cartTotalQuantity = state.cartItems.reduce((total, item) => total + item.cartQuantity, 0);
         }
@@ -132,6 +137,7 @@ export const {
     increaseCart,
     decreaseCart,
     cartClear,
+    cartClearWhenBuy,
     totalQuantity
 } = bookSlice.actions
 

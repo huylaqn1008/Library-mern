@@ -104,7 +104,7 @@ const ShoppingCart = () => {
                                     </div>
                                 </td>
                                 <td className="text-center">
-                                    {item.buyPrice.toLocaleString("vi-VN")} VNĐ
+                                    {item.discountPrice ? (item.buyPrice - item.discountPrice).toLocaleString("vi-VN") : item.buyPrice.toLocaleString("vi-VN")} VNĐ
                                 </td>
                                 <td>
                                     <div className="flex text-center mx-auto" style={{ justifyContent: 'space-evenly', border: '1px solid black', padding: '10px' }}>
@@ -114,7 +114,7 @@ const ShoppingCart = () => {
                                     </div>
                                 </td>
                                 <td className="text-center">
-                                    {(item.cartQuantity * item.buyPrice).toLocaleString("vi-VN")} VNĐ
+                                    {item.discountPrice ? ((item.buyPrice - item.discountPrice) * item.cartQuantity).toLocaleString("vi-VN") : (item.cartQuantity * item.buyPrice).toLocaleString("vi-VN")} VNĐ
                                 </td>
                                 <td className="text-center">
                                     <button onClick={() => handleRemoveFromCart(item._id)}>
@@ -149,7 +149,7 @@ const ShoppingCart = () => {
                     <div className="flex gap-2">
                         <div className="text-xl font-bold">Total Amount:</div>
                         <div className="text-xl font-bold">
-                            {cartItems.reduce((total, item) => total + item.cartQuantity * item.buyPrice, 0).toLocaleString("vi-VN")} VNĐ
+                            {cartItems.reduce((total, item) => total + item.cartQuantity * (item.buyPrice - item.discountPrice), 0).toLocaleString("vi-VN")} VNĐ
                         </div>
                     </div>
                     <div className="flex">

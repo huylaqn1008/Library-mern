@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { cartClearWhenBuy } from '../../redux/Book/bookSlice'
 
 export default function BuyPayment() {
     const cartItems = useSelector((state) => state.book.cartItems)
     const currentUser = useSelector((state) => state.user.currentUser)
 
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const [phone, setPhone] = useState(currentUser.phoneNumber)
     const [address, setAddress] = useState(currentUser.address)
@@ -76,9 +78,11 @@ export default function BuyPayment() {
             })
                 .then(response => {
                     if (response.ok) {
-                        setShowSuccess('Payment successful')
+                        dispatch(cartClearWhenBuy())
+
                         setTimeout(() => {
                             setIsLoading(false)
+                            setShowSuccess('Payment successful')
                         }, 3000)
                     } else {
                         setShowError('Payment failed. Please try again.')
@@ -98,7 +102,7 @@ export default function BuyPayment() {
     }
 
     const totalPrice = cartItems.reduce(
-        (total, item) => total + item.cartQuantity * item.buyPrice,
+        (total, item) => total + item.cartQuantity * (item.buyPrice - item.discountPrice),
         0
     )
 
@@ -152,7 +156,10 @@ export default function BuyPayment() {
                         <div>
                             <h3 className="text-lg font-bold">{item.name}</h3>
                             <p>Quantity: {item.cartQuantity}</p>
-                            <p>Total Price: {(item.cartQuantity * item.buyPrice).toLocaleString("vi-VN")} VNĐ</p>
+                            <p>Total Price: {item.discountPrice
+                                ? (item.cartQuantity * (item.buyPrice - item.discountPrice)).toLocaleString("vi-VN")
+                                : (item.cartQuantity * item.buyPrice).toLocaleString("vi-VN")} VNĐ
+                            </p>
                         </div>
                     </div>
                 ))}
