@@ -11,15 +11,15 @@ import Search from "./pages/Search"
 import SignIn from "./pages/user/SignIn"
 import SignUp from "./pages/user/SignUp"
 import Profile from "./pages/user/Profile"
-import CreateBook from './pages/book/CreateBook';
-import UpdateBook from './pages/book/UpdateBook';
-import ForgotPassword from './pages/user/ForgotPassword';
+import CreateBook from './pages/book/CreateBook'
+import UpdateBook from './pages/book/UpdateBook'
+import ForgotPassword from './pages/user/ForgotPassword'
 import Book from "./pages/book/Book"
 import VerifyOtp from "./pages/user/VerifyOtp"
 import ResetPassword from "./pages/user/ResetPassword"
 import Dashboard from "./pages/admin/Dashboard"
 import RentPayment from "./pages/payment/RentPayment"
-import Hitory from "./pages/user/Hitory"
+import History from "./pages/user/History"
 import ShoppingCart from "./pages/payment/ShoppingCart"
 import BuyPayment from "./pages/payment/BuyPayment"
 import Thankyou from "./components/Thankyou"
@@ -39,7 +39,7 @@ export default function App() {
           <Route path="/create-book" element={<CreateBook />} />
           <Route path="/update-book/:bookId" element={<UpdateBook />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/history" element={<Hitory />} />
+          <Route path="/history" element={<History />} />
         </Route>
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/verifyotp" element={<VerifyOtp />} />

@@ -41,4 +41,15 @@ const buyPayment = async (req, res, next) => {
     }
 }
 
-module.exports = { buyPayment }
+const getAllBuyPayments = async (req, res, next) => {
+    try {
+        const buyPayments = await BuyPayment.find()
+        const books = await Book.find()
+
+        res.status(200).json({ buyPayments, books })
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { buyPayment, getAllBuyPayments }

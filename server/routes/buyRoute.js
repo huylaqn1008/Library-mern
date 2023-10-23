@@ -1,8 +1,9 @@
 const express = require('express')
-const { buyPayment } = require('../controllers/buyController')
+const { buyPayment, getAllBuyPayments } = require('../controllers/buyController')
 
 const buyPaymentRoute = express.Router()
 
-buyPaymentRoute.post('/buyPayment', buyPayment)
+buyPaymentRoute.post('/buypayment', buyPayment)
+buyPaymentRoute.get('/buypayment', getAllBuyPayments)
 
 module.exports = buyPaymentRoute

@@ -64,7 +64,8 @@ export default function BuyPayment() {
                 cartItems: cartItems.map(item => ({
                     bookId: item._id,
                     name: item.name,
-                    quantity: item.cartQuantity
+                    quantity: item.cartQuantity,
+                    price: item.offer ? (item.buyPrice - item.discountPrice) : item.buyPrice
                 })),
                 totalPrice: totalPrice
             }
@@ -86,6 +87,7 @@ export default function BuyPayment() {
                         }, 3000)
                     } else {
                         setShowError('Payment failed. Please try again.')
+                        setIsLoading(false)
                     }
                 })
                 .catch(error => {
@@ -156,7 +158,7 @@ export default function BuyPayment() {
                         <div>
                             <h3 className="text-lg font-bold">{item.name}</h3>
                             <p>Quantity: {item.cartQuantity}</p>
-                            <p>Total Price: {item.discountPrice
+                            <p>Total Price: {item.offer
                                 ? (item.cartQuantity * (item.buyPrice - item.discountPrice)).toLocaleString("vi-VN")
                                 : (item.cartQuantity * item.buyPrice).toLocaleString("vi-VN")} VNĐ
                             </p>
@@ -234,8 +236,8 @@ export default function BuyPayment() {
                         <p className="text-green-500">{showSuccess}</p>
                         <button
                             onClick={() => {
-                                setShowSuccess(false);
-                                navigate('/thank-you');
+                                setShowSuccess(false)
+                                navigate('/thank-you')
                             }}
                             className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
                         >
