@@ -52,7 +52,26 @@ const bookSchema = new mongoose.Schema({
     userRef: {
         type: String,
         required: true
-    }
+    },
+    ratings: [{
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        },
+        rating: {
+            type: Number,
+            required: true
+        },
+        comment: {
+            type: String,
+            required: true
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now
+        }
+    }]
 }, { timestamps: true })
 
 const Book = mongoose.model('Books', bookSchema)

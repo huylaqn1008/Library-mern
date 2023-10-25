@@ -97,7 +97,7 @@ const getBooks = async (req, res, next) => {
 
         const searchTerm = req.query.searchTerm || ''
 
-        const sort = req.query.sort || 'createdAt'
+        const sort = req.query.sort || 'name'
 
         const order = req.query.order === 'asc' ? 1 : -1
 
@@ -121,4 +121,66 @@ const getBooks = async (req, res, next) => {
     }
 }
 
-module.exports = { createBook, deleteBook, updateBook, getBook, getBooks }
+const rateAndCommentBook = async (req, res, next) => {
+    const { rating, comment } = req.body
+    const bookId = req.params.id
+    const userId = req.user.id
+
+    try {
+        const book = await Book.findById(bookId)
+
+        if (!book) {
+            return res.status(404).json({
+                error: 'Book not found'
+            })
+        }
+
+        const existingRating = book.ratings.find(
+            (rating) => rating.user.toString() === userId
+        )
+
+        if (existingRating) {
+            return res.status(400).json({
+                error: 'You have already rated and commented on this book'
+            })
+        }
+
+        book.ratings.push({ user: userId, rating, comment })
+        await book.save()
+
+        res.status(200).json({
+            message: 'Rating and comment submitted successfully',
+            book: book
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getBookComments = async (req, res, next) => {
+    try {
+        const bookId = req.params.id
+        const book = await Book.findById(bookId).populate('ratings.user')
+
+        if (!book) {
+            return res.status(404).json({
+                error: 'Book not found'
+            })
+        }
+
+        const comments = book.ratings.map((rating) => {
+            return {
+                user: rating.user.username,
+                rating: rating.rating,
+                comment: rating.comment,
+                createdAt: rating.createdAt
+            }
+        })
+
+        res.status(200).json(comments)
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { createBook, deleteBook, updateBook, getBook, getBooks, rateAndCommentBook, getBookComments }
