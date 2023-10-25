@@ -30,18 +30,16 @@ export default function HistoryBuy() {
         {
             field: 'bookTitle',
             headerName: <strong>Book Title</strong>,
-            width: 300,
+            width: 400,
         },
         {
             field: 'quantity',
             headerName: <strong>Quantity</strong>,
-            type: 'number',
             width: 160,
         },
         {
             field: 'totalPrice',
             headerName: <strong>Total Price</strong>,
-            type: 'number',
             width: 160,
             valueFormatter: (params) => {
                 const priceValue = params.value.toLocaleString('vi-VN')

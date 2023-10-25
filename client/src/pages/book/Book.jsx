@@ -4,10 +4,9 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore from 'swiper'
 import { Autoplay, Navigation } from 'swiper/modules'
 import 'swiper/css/bundle'
-import { FaShare } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
-import Contact from './../../components/Contact'
 import { setAddCart, setBookDetails, setRentalDetails } from '../../redux/Book/bookSlice'
+import moment from 'moment'
 
 SwiperCore.use([Navigation, Autoplay])
 
@@ -19,6 +18,8 @@ export default function Book() {
     const dispatch = useDispatch()
 
     const currentUser = useSelector((state) => state.user.currentUser)
+
+    const [signin, setSignin] = useState()
 
     const [book, setBook] = useState()
     const [loading, setLoading] = useState(false)
@@ -33,9 +34,13 @@ export default function Book() {
     const [errorDayToday, setErrorDayToday] = useState(false)
     const [errorDayRentLimit, setErrorDayRentLimit] = useState(false)
 
-    const [copied, setCopied] = useState(false)
     const [showMore, setShowMore] = useState(false)
-    const [contact, setContact] = useState(false)
+
+    const [rating, setRating] = useState(0)
+    const [comment, setComment] = useState('')
+    const [ratingSubmitted, setRatingSubmitted] = useState(false)
+    const [comments, setComments] = useState([])
+    const [loadingComments, setLoadingComments] = useState(true)
 
     const rentalDuration = Math.ceil((rentEndDate - rentStartDate) / (1000 * 60 * 60 * 24))
 
@@ -137,22 +142,87 @@ export default function Book() {
         navigate('/payment-rent')
     }
 
-    const handleShareClick = () => {
-        navigator.clipboard.writeText(window.location.href)
-        setCopied(true)
-    }
-
     const toggleShowMore = () => {
         setShowMore(!showMore)
     }
 
     const closeErrorCard = () => {
         setShowRentPrice(false)
+        setRatingSubmitted(false)
     }
 
     const handleAddToCart = (book) => {
         dispatch(setAddCart(book))
     }
+
+    const handleRatingSubmit = async () => {
+        if (!currentUser) {
+            setSignin(true)
+            return
+        }
+
+        try {
+            const response = await fetch(`/api/book/ratings/${params.bookId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    bookId: book._id,
+                    rating: rating,
+                    comment: comment,
+                }),
+            })
+
+            if (response.ok) {
+                const data = await response.json()
+                dispatch(setBookDetails(data))
+                setRating(0)
+                setComment('')
+                setRatingSubmitted(true)
+            } else {
+                throw new Error('Failed to submit rating and comment')
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleRatingChange = (value) => {
+        setRating(value)
+    }
+
+    const handleCommentChange = (event) => {
+        setComment(event.target.value)
+    }
+
+    const changeSigninPage = () => {
+        setSignin(false)
+        navigate('/signin')
+    }
+
+    useEffect(() => {
+        const fetchComments = async () => {
+            try {
+                setLoadingComments(true)
+                const response = await fetch(`/api/book/ratings/${params.bookId}`)
+                if (response.ok) {
+                    const data = await response.json()
+                    const commentsWithTime = data.map(comment => ({
+                        ...comment,
+                        createdAt: new Date(comment.createdAt).toLocaleString()
+                    }))
+
+                    setComments(commentsWithTime)
+                }
+                setLoadingComments(false)
+            } catch (error) {
+                console.error('Error fetching comments:', error)
+                setLoadingComments(false)
+            }
+        }
+        fetchComments()
+    }, [params.bookId])
 
     return (
         <main className='mx-auto'>
@@ -179,14 +249,6 @@ export default function Book() {
                                             </SwiperSlide>
                                         ))}
                                     </Swiper>
-                                    <button className='text-blue-500' onClick={handleShareClick}>
-                                        <FaShare />
-                                    </button>
-                                    {copied && (
-                                        <p className='text-green-500'>
-                                            URL copied to clipboard!
-                                        </p>
-                                    )}
                                 </div>
                                 <div className='flex md:justify-center items-center'>
                                     <div className='flex flex-col gap-4 ml-10'>
@@ -358,17 +420,114 @@ export default function Book() {
                                 </div>
                             </div>
                         </div>
-                        {currentUser && book.userRef !== currentUser._id && !contact && (
+                        <div className="flex flex-col gap-2">
+                            <div className="flex items-center gap-1">
+                                <p className="italic font-semibold">Rating:</p>
+                                <div className="flex">
+                                    {[...Array(5)].map((_, index) => {
+                                        const ratingValue = index + 1
+                                        return (
+                                            <label key={ratingValue} className="flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="rating"
+                                                    value={ratingValue}
+                                                    onClick={() => handleRatingChange(ratingValue)}
+                                                    className="sr-only"
+                                                />
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 20 20"
+                                                    fill={ratingValue <= rating ? '#ffc107' : '#e4e5e9'}
+                                                    className="h-5 w-5"
+                                                >
+                                                    <path
+                                                        fillRule="evenodd"
+                                                        d="M10 1l2.928 6.856 6.072.552-4.64 4.024 1.392 6.816-5.752-3.032-5.752 3.032 1.392-6.816-4.64-4.024 6.072-.552z"
+                                                        clipRule="evenodd"
+                                                    />
+                                                </svg>
+                                            </label>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <label htmlFor="comment" className="italic font-semibold">
+                                    Comment:
+                                </label>
+                                <textarea
+                                    id="comment"
+                                    value={comment}
+                                    onChange={handleCommentChange}
+                                    rows={3}
+                                    cols={50}
+                                    style={{ padding: '5px' }}
+                                />
+                            </div>
                             <button
-                                onClick={() => setContact(true)}
-                                className='bg-yellow-500 text-black p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
-                                style={{ width: '100%' }}
+                                className="bg-blue-600 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
+                                onClick={handleRatingSubmit}
+                                disabled={rating === 0}
                             >
-                                Contact
+                                Submit
                             </button>
-                        )}
-                        {contact && <Contact book={book} />}
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-semibold mt-4">Comments</h2>
+                            {loadingComments && <p>Loading comments...</p>}
+                            {!loadingComments && comments.length === 0 && <p>No comments available.</p>}
+                            {!loadingComments && comments.length > 0 && (
+                                <div>
+                                    {comments.map((comment, index) => (
+                                        <div key={index} className="border p-3 my-2 rounded-lg">
+                                            <p className="font-semibold">{comment.user}</p>
+                                            <p className='mt-2'>
+                                                Rating:
+                                                {[...Array(comment.rating)].map((_, index) => (
+                                                    <svg
+                                                        key={index}
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 2 20 20"
+                                                        fill="#ffc107"
+                                                        className="h-5 w-5 inline-block"
+                                                    >
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M10 1l2.928 6.856 6.072.552-4.64 4.024 1.392 6.816-5.752-3.032-5.752 3.032 1.392-6.816-4.64-4.024 6.072-.552z"
+                                                            clipRule="evenodd"
+                                                        />
+                                                    </svg>
+                                                ))}
+                                            </p>
+                                            <p className='mt-2'>Comment: {comment.comment}</p>
+                                            <p className="mt-2">Posted at: {comment.createdAt}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
+
+                    {signin && (
+                        <div className="fixed inset-0 flex items-center justify-center z-50">
+                            <div className="fixed inset-0 bg-black opacity-50"></div>
+                            <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
+                                <p className='text-red-500'>Please sign in before rate and comment book</p>
+                                <button onClick={changeSigninPage} className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600">Sign In</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {ratingSubmitted && (
+                        <div className="fixed inset-0 flex items-center justify-center z-50">
+                            <div className="fixed inset-0 bg-black opacity-50"></div>
+                            <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
+                                <p className='text-green-500'>Thank you for responding!</p>
+                                <button onClick={closeErrorCard} className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">Close</button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </main>
