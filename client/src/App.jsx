@@ -17,18 +17,24 @@ import ForgotPassword from './pages/user/ForgotPassword'
 import Book from "./pages/book/Book"
 import VerifyOtp from "./pages/user/VerifyOtp"
 import ResetPassword from "./pages/user/ResetPassword"
-import Dashboard from "./pages/admin/Dashboard"
 import RentPayment from "./pages/payment/RentPayment"
 import History from "./pages/user/History"
 import ShoppingCart from "./pages/payment/ShoppingCart"
 import BuyPayment from "./pages/payment/BuyPayment"
 import Thankyou from "./components/Thankyou"
+import AdminPage from "./pages/admin/AdminPage"
+import { useState } from "react"
+import Dashboard from "./dashboard/Dashboard"
+import DashboardProduct from "./dashboard/DashboardProduct"
+import DashboardCustomer from "./dashboard/DashboardCustomer"
 
 export default function App() {
+  const [showHeader, setShowHeader] = useState(true)
+
   return (
     <BrowserRouter>
       <ToastContainer />
-      <Header />
+      {showHeader && <Header />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignIn />} />
@@ -38,7 +44,11 @@ export default function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/create-book" element={<CreateBook />} />
           <Route path="/update-book/:bookId" element={<UpdateBook />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admin" element={<AdminPage setShowHeader={setShowHeader} />} >
+            <Route index element={<Dashboard />} />
+            <Route path="products" element={<DashboardProduct />} />
+            <Route path="customers" element={<DashboardCustomer />} />
+          </Route>
           <Route path="/history" element={<History />} />
         </Route>
         <Route path="/forgotpassword" element={<ForgotPassword />} />

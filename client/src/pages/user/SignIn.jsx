@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { signInFailure, signInStart, signInSuccess } from '../../redux/User/userSlice'
@@ -44,13 +44,6 @@ export default function SignIn() {
             if (res.ok) {
                 dispatch(signInSuccess(data))
                 navigate('/')
-
-                const expirationTime = new Date().getTime() + (3 * 24 * 60 * 60 * 1000)
-                const signInData = {
-                    user: data,
-                    expirationTime: expirationTime
-                }
-                localStorage.setItem('signInData', JSON.stringify(signInData))
             } else {
                 if (data.error === 'Email not registered!') {
                     dispatch(signInFailure("Email not registered!"))
@@ -73,21 +66,6 @@ export default function SignIn() {
             setShowError(true)
         }
     }
-
-    useEffect(() => {
-        const signInData = localStorage.getItem('signInData')
-        if (signInData) {
-            const { user, expirationTime } = JSON.parse(signInData)
-            const currentTime = new Date().getTime()
-
-            if (currentTime <= expirationTime) {
-                dispatch(signInSuccess(user))
-                navigate('/')
-            } else {
-                localStorage.removeItem('signInData')
-            }
-        }
-    }, [dispatch, navigate])
 
     const closeErrorCard = () => {
         setShowError(false)

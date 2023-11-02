@@ -65,7 +65,6 @@ const bookSchema = new mongoose.Schema({
         },
         comment: {
             type: String,
-            required: true
         },
         createdAt: {
             type: Date,

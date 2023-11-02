@@ -20,7 +20,7 @@ export default function BookItem({ book }) {
                         {book.description}
                     </p>
                     {book.sell ? (
-                        <p className='text-slate-500 mt-2 font-semibold items-center'>
+                        <div className='text-slate-500 mt-2 font-semibold items-center'>
                             {book.offer ? (
                                 <div className='flex flex-col gap-2 text-green-600'>
                                     <div className='flex gap-1'>
@@ -52,7 +52,7 @@ export default function BookItem({ book }) {
                                     )}
                                 </div>
                             )}
-                        </p>
+                        </div>
                     ) : (
                         <p className='text-slate-500 mt-2 font-semibold items-center'>
                             Chỉ cho thuê

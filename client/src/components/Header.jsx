@@ -41,7 +41,7 @@ export default function Header() {
         <header className='bg-slate-200 shadow-md'>
             <div className='flex justify-between items-center max-w-6xl mx-auto p-4'>
                 <Link to='/'>
-                    <h1 className='font-bold text-sm sm:text-xl flex flex-wrap'>
+                    <h1 className='font-bold text-sm sm:text-3xl flex flex-wrap'>
                         <span className='text-slate-500'>Library</span>
                         <span className='text-slate-700'>TMA</span>
                     </h1>
@@ -58,22 +58,22 @@ export default function Header() {
                         <FaSearch className='text-slate-600' />
                     </button>
                 </form>
-                <ul className='flex gap-4'>
+                <ul className='flex gap-5'>
                     <Link to='/'>
-                        <li className='hidden sm:inline text-slate-700 hover:underline'>Home</li>
+                        <li className='hidden sm:inline text-xl text-slate-700 hover:underline'>Home</li>
                     </Link>
                     <Link to='/about'>
-                        <li className='hidden sm:inline text-slate-700 hover:underline'>About</li>
+                        <li className='hidden sm:inline text-xl text-slate-700 hover:underline'>About</li>
                     </Link>
                     <Link to='/cart' className='relative cursor-pointer mr-10'>
-                        <BiShoppingBag className='text-2xl opacity-80' />
+                        <BiShoppingBag className='text-3xl opacity-80' />
                         <div className='absolute w-4 h-4 rounded-full z-10 -bottom-1 -right-1 flex items-center justify-center text-[10px] bg-black text-white'>
                             {cartTotalQuantity}
                         </div>
                     </Link>
                     <Link to='/profile'> {
                         currentUser ? (
-                            <img src={currentUser.avatar} alt='profile' className='rounded-full h-7 w-7 object-cover' />
+                            <img src={currentUser.avatar} alt='profile' className='rounded-full h-8 w-8 object-cover' />
                         ) : (
                             <li className='text-slate-700 hover:underline'>
                                 Sign in

@@ -6,7 +6,6 @@ import { Autoplay, Navigation } from 'swiper/modules'
 import 'swiper/css/bundle'
 import { useDispatch, useSelector } from 'react-redux'
 import { setAddCart, setBookDetails, setRentalDetails } from '../../redux/Book/bookSlice'
-import moment from 'moment'
 
 SwiperCore.use([Navigation, Autoplay])
 
@@ -224,6 +223,20 @@ export default function Book() {
         fetchComments()
     }, [params.bookId])
 
+    const calculateAverageRating = () => {
+        if (comments.length === 0) {
+            return 0; // Trả về 0 nếu không có rating nào
+        }
+
+        const totalRating = comments.reduce((sum, comment) => sum + comment.rating, 0);
+        const averageRating = totalRating / comments.length;
+
+        return averageRating;
+    };
+
+    // Để sử dụng hàm calculateAverageRating và hiển thị trung bình cộng rating trong JSX:
+    const averageRating = calculateAverageRating();
+
     return (
         <main className='mx-auto'>
             {loading && <p className='text-center my-7 text-2xl'>Loading...</p>}
@@ -255,6 +268,25 @@ export default function Book() {
                                         <div className='flex flex-col gap-6'>
                                             <div className='flex flex-col gap-2'>
                                                 <p className='text-4xl font-semibold'>{book.name}</p>
+                                                {comments.length > 0 && (
+                                                    <div className='flex gap-2'>
+                                                        <p className='text-xl italic'>Average Rating: {averageRating.toFixed(1)}
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                viewBox="0 2 20 20"
+                                                                fill="#ffc107"
+                                                                className="h-5 w-5 inline-block"
+                                                            >
+                                                                <path
+                                                                    fillRule="evenodd"
+                                                                    d="M10 1l2.928 6.856 6.072.552-4.64 4.024 1.392 6.816-5.752-3.032-5.752 3.032 1.392-6.816-4.64-4.024 6.072-.552z"
+                                                                    clipRule="evenodd"
+                                                                />
+                                                            </svg>
+                                                        </p>
+                                                        <p className='text-xl italic'>({comments.length})</p>
+                                                    </div>
+                                                )}
                                                 {book.sell ? (
                                                     <div className='flex flex-col'>
                                                         {book.discountPrice && book.offer ? (

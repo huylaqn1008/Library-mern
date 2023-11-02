@@ -331,8 +331,8 @@ export default function Profile() {
                     </Link>
                 )}
                 {currentUser.role === 0 && (
-                    <Link to={'/dashboard'} className='bg-blue-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95'>
-                        Dashboard
+                    <Link to={'/admin'} className='bg-blue-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95'>
+                        Admin page
                     </Link>
                 )}
                 <Link to={'/history'} className='bg-yellow-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95'>
