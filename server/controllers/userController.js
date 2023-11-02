@@ -81,4 +81,27 @@ const getAllUsers = async (req, res, next) => {
     }
 }
 
-module.exports = { test, updateUser, getUserBooks, getUser, getAllUsers }
+const updateUserRole = async (req, res, next) => {
+    try {
+        // if (req.user.role !== 0) {
+        //     return res.status(401).json({ error: 'Chỉ admin mới có quyền cập nhật role người dùng.' })
+        // }
+
+        const userId = req.params.id
+
+        const newRole = req.body.role
+
+        if (newRole !== 0 && newRole !== 1) {
+            return res.status(400).json({ error: 'Role không hợp lệ.' })
+        }
+
+        await User.findByIdAndUpdate(userId, { role: newRole })
+
+        res.status(200).json({ message: 'Cập nhật role thành công.' })
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+module.exports = { test, updateUser, getUserBooks, getUser, getAllUsers, updateUserRole }
