@@ -183,4 +183,13 @@ const getBookComments = async (req, res, next) => {
     }
 }
 
-module.exports = { createBook, deleteBook, updateBook, getBook, getBooks, rateAndCommentBook, getBookComments }
+const getAllBooks = async (req, res, next) => {
+    try {
+        const books = await Book.find()
+        res.status(200).json(books)
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { createBook, deleteBook, updateBook, getBook, getBooks, rateAndCommentBook, getBookComments, getAllBooks }

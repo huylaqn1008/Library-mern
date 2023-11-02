@@ -1,5 +1,5 @@
 const express = require('express')
-const { createBook, deleteBook, updateBook, getBook, getBooks, rateAndCommentBook, getBookComments } = require('../controllers/bookController')
+const { createBook, deleteBook, updateBook, getBook, getBooks, rateAndCommentBook, getBookComments, getAllBooks } = require('../controllers/bookController')
 const verifyToken = require('../utils/verify')
 
 const bookRouter = express.Router()
@@ -11,5 +11,6 @@ bookRouter.get('/get/:id', getBook)
 bookRouter.get('/get', getBooks)
 bookRouter.post('/ratings/:id', verifyToken, rateAndCommentBook)
 bookRouter.get('/ratings/:id', getBookComments)
+bookRouter.get('/allbook', getAllBooks)
 
 module.exports = bookRouter

@@ -41,7 +41,7 @@ export default function DashboardCustomer() {
 
     return (
         <div className="container mx-auto">
-            <h1 className="text-2xl font-bold mb-4">Danh sách người dùng</h1>
+            <h1 className="text-4xl mt-10 font-bold mb-4 flex justify-center">User list</h1>
             <table className="min-w-full bg-white border border-gray-300">
                 <thead>
                     <tr>
