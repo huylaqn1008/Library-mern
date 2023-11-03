@@ -52,4 +52,31 @@ const getAllBuyPayments = async (req, res, next) => {
     }
 }
 
-module.exports = { buyPayment, getAllBuyPayments }
+const getTotalPriceSum = async (req, res, next) => {
+    try {
+        const totalPriceSum = await BuyPayment.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    totalPriceSum: { $sum: "$totalPrice" }
+                }
+            }
+        ])
+
+        res.status(200).json({ totalPriceSum: totalPriceSum[0].totalPriceSum })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getLatestBuyPayments = async (req, res, next) => {
+    try {
+        const buyPayments = await BuyPayment.find().sort({ createdAt: -1 })
+        res.status(200).json({ buyPayments })
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { buyPayment, getAllBuyPayments, getTotalPriceSum, getLatestBuyPayments }
+

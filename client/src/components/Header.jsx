@@ -40,7 +40,7 @@ export default function Header() {
     return (
         <header className='bg-slate-200 shadow-md'>
             <div className='flex justify-between items-center max-w-6xl mx-auto p-4'>
-                <Link to='/'>
+                <Link to='/' className='hover:no-underline'>
                     <h1 className='font-bold text-sm sm:text-3xl flex flex-wrap'>
                         <span className='text-slate-500'>Library</span>
                         <span className='text-slate-700'>TMA</span>

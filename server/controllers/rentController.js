@@ -108,5 +108,23 @@ const getAllRentPayments = async (req, res, next) => {
     }
 }
 
-module.exports = { rentPayment, updateRentalStatus, getRentPayment, getAllRentPayments }
+const getTotalRentalPrice = async (req, res, next) => {
+    try {
+        const rentalTotalPriceSum = await RentPayment.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    rentalTotalPriceSum: { $sum: "$rentalTotalPrice" }
+                }
+            }
+        ])
+
+        res.status(200).json({ rentalTotalPriceSum: rentalTotalPriceSum[0].rentalTotalPriceSum })
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { rentPayment, updateRentalStatus, getRentPayment, getAllRentPayments, getTotalRentalPrice }
+
 

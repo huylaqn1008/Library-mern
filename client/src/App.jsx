@@ -27,6 +27,7 @@ import { useState } from "react"
 import Dashboard from "./dashboard/Dashboard"
 import DashboardProduct from "./dashboard/DashboardProduct"
 import DashboardCustomer from "./dashboard/DashboardCustomer"
+import DashboardBuy from "./dashboard/DashboardBuy"
 
 export default function App() {
   const [showHeader, setShowHeader] = useState(true)
@@ -48,6 +49,7 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="products" element={<DashboardProduct />} />
             <Route path="customers" element={<DashboardCustomer />} />
+            <Route path="buys" element={<DashboardBuy />} />
           </Route>
           <Route path="/history" element={<History />} />
         </Route>
