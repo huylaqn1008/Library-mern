@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function Dashboard() {
     const [totalUsers, setTotalUsers] = useState(0)
@@ -7,6 +7,9 @@ export default function Dashboard() {
     const [totalPrice, setTotalPrice] = useState(0)
     const [totalRentalPrice, setTotalRentalPrice] = useState(0)
     const [recentOrders, setRecentOrders] = useState([])
+    const [topRatedBooks, setTopRatedBooks] = useState([])
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         const fetchData = async () => {
@@ -30,6 +33,20 @@ export default function Dashboard() {
                 const recentOrdersResponse = await fetch('/api/buy/newbuypayment')
                 const recentOrdersData = await recentOrdersResponse.json()
                 setRecentOrders(recentOrdersData.buyPayments.slice(0, 3))
+
+                try {
+                    const topRatedResponse = await fetch('/api/book/top-rating')
+                    const topRatedData = await topRatedResponse.json()
+
+                    if (Array.isArray(topRatedData)) {
+                        setTopRatedBooks(topRatedData.slice(0, 3))
+                    } else {
+                        console.error('Invalid top rated data format:', topRatedData)
+                    }
+                } catch (error) {
+                    console.error('Error fetching top rated books:', error)
+                }
+
             } catch (error) {
                 console.error('Error fetching data:', error)
             }
@@ -37,6 +54,11 @@ export default function Dashboard() {
 
         fetchData()
     }, [])
+
+    const handleChangeClick = (bookId) => {
+        navigate(`/book/${bookId}`)
+        window.location.reload()
+    }
 
     return (
         <div className='px-3'>
@@ -60,7 +82,7 @@ export default function Dashboard() {
                             <i className='bi bi-cart-plus p-3 fs-1'></i>
                         </div>
                     </Link>
-                    <div className='col-md-3 text-[#E066FF] hover:no-underline'>
+                    <Link to='/admin/buys' className='col-md-3 text-[#E066FF] hover:no-underline'>
                         <div className='p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded hover:scale-90 hover:z-10 transition-all duration-300'>
                             <div>
                                 <h3 className='fs-2'>{totalPrice.toLocaleString()} VNĐ</h3>
@@ -68,7 +90,7 @@ export default function Dashboard() {
                             </div>
                             <i className='bi bi-credit-card p-3 fs-1'></i>
                         </div>
-                    </div>
+                    </Link>
                     <div className='col-md-3 text-[#009ACD] hover:no-underline'>
                         <div className='p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded hover:scale-90 hover:z-10 transition-all duration-300'>
                             <div>
@@ -109,6 +131,39 @@ export default function Dashboard() {
                     ))}
                 </tbody>
             </table>
+
+            <div className='row g-3 my-2'>
+                <div className='text-[#00CD00] font-semibold mt-3 fs-4'>Current Top Rating</div>
+                {topRatedBooks.map((book, index) => (
+                    <div className='col-md-4    ' key={index}>
+                        <div
+                            className='p-3 hover:no-underline bg-white shadow-sm cursor-pointer d-flex justify-content-around rounded hover:scale-90 hover:z-10 transition-all duration-300'
+                            style={{ height: '200px' }}
+                            onClick={() => handleChangeClick(book._id)}
+                        >
+                            <div>
+                                <div className='text-2xl font-semibold text-slate-700 truncate'>Top {index + 1}</div>
+                                <div className='fs-2 text-[#ECAB53]'>{book.name}</div>
+                                <p className='fs-5 text-black'>Rating: {book.averageRating.toFixed(1)}
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 2 20 20"
+                                        fill="#ffc107"
+                                        className="h-5 w-5 inline-block"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M10 1l2.928 6.856 6.072.552-4.64 4.024 1.392 6.816-5.752-3.032-5.752 3.032 1.392-6.816-4.64-4.024 6.072-.552z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </p>
+                            </div>
+                            <img src={book.firstImage} alt={book.name} width='100' height='100' />
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }

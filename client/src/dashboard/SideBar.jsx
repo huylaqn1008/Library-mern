@@ -1,13 +1,20 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Logo from '../assets/logo.png'
 import { BiBook, BiShoppingBag } from 'react-icons/bi'
 
 export default function Sidebar() {
     const [showDropdown, setShowDropdown] = useState(false)
 
+    const navigate = useNavigate()
+
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown)
+    }
+
+    const handleHomeClick = () => {
+        navigate('/')
+        window.location.reload()
     }
 
     return (
@@ -18,10 +25,10 @@ export default function Sidebar() {
             </div>
             <hr className='text-dark' />
             <div className='list-group mt-3'>
-                <Link to='/' className='hover:bg-[#CD9B9B] hover:text-white mt-3 text-slate-600 py-2'>
+                <div className='hover:bg-[#CD9B9B] hover:text-white mt-3 text-slate-600 py-2 cursor-pointer' onClick={handleHomeClick}>
                     <i className='bi bi-house fs-5 me-2 px-3'></i>
                     <span className='fs-5'>Home</span>
-                </Link>
+                </div>
                 <Link to='/admin' className='hover:bg-[#CD9B9B] hover:text-white mt-3 text-slate-600 py-2'>
                     <i className='bi bi-speedometer2 fs-5 me-2 px-3'></i>
                     <span className='fs-5'>Dashboard</span>

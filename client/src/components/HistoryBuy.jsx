@@ -38,6 +38,15 @@ export default function HistoryBuy() {
             width: 160,
         },
         {
+            field: 'price',
+            headerName: <strong>Price</strong>,
+            width: 160,
+            valueFormatter: (params) => {
+                const priceValue = params.value.toLocaleString('vi-VN')
+                return priceValue
+            },
+        },
+        {
             field: 'totalPrice',
             headerName: <strong>Total Price</strong>,
             width: 160,
@@ -61,6 +70,7 @@ export default function HistoryBuy() {
                     id: bookTitle,
                     bookTitle: bookTitle,
                     quantity: item.quantity,
+                    price: item.price,
                     totalPrice: item.quantity * item.price,
                 })
             } else {

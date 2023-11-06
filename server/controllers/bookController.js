@@ -192,4 +192,45 @@ const getAllBooks = async (req, res, next) => {
     }
 }
 
-module.exports = { createBook, deleteBook, updateBook, getBook, getBooks, rateAndCommentBook, getBookComments, getAllBooks }
+const getTopRating = async (req, res, next) => {
+    try {
+        const topRatedBooks = await Book.aggregate([
+            {
+                $addFields: {
+                    firstImage: { $arrayElemAt: ['$imageUrls', 0] },
+                },
+            },
+            {
+                $project: {
+                    name: 1,
+                    firstImage: 1,
+                    ratings: 1,
+                },
+            },
+            {
+                $match: {
+                    'ratings.0': { $exists: true },
+                },
+            },
+            {
+                $addFields: {
+                    averageRating: {
+                        $avg: '$ratings.rating',
+                    },
+                },
+            },
+            {
+                $sort: {
+                    averageRating: -1,
+                },
+            },
+        ]);
+
+        res.status(200).json(topRatedBooks);
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+module.exports = { createBook, deleteBook, updateBook, getBook, getBooks, rateAndCommentBook, getBookComments, getAllBooks, getTopRating }

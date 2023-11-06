@@ -34,7 +34,7 @@ export default function DashboardBuy() {
 
     return (
         <div className='px-3 mx-auto'>
-            <h1 className="text-4xl mt-10 font-bold mb-4 flex justify-center">User list</h1>
+            <h1 className="text-4xl mt-10 font-bold mb-4 flex justify-center">Reciept List</h1>
             <table className='table caption-top bg-white shadow-lg border-r-4'>
                 <thead>
                     <tr>
@@ -60,7 +60,7 @@ export default function DashboardBuy() {
                             </td>
                             <td className='text-[15px]'>{order.totalPrice.toLocaleString()} VNĐ</td>
                             <td className='text-[15px]'>{new Date(order.createdAt).toLocaleDateString('vi-VN')}</td>
-                            <td className='text-slate-500 text-[15px] hover:underline' onClick={() => handleDetailClick(order)}>
+                            <td className='text-slate-500 text-[15px] hover:underline cursor-pointer' onClick={() => handleDetailClick(order)}>
                                 Detail
                             </td>
                         </tr>

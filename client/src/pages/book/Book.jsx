@@ -225,17 +225,16 @@ export default function Book() {
 
     const calculateAverageRating = () => {
         if (comments.length === 0) {
-            return 0; // Trả về 0 nếu không có rating nào
+            return 0
         }
 
-        const totalRating = comments.reduce((sum, comment) => sum + comment.rating, 0);
-        const averageRating = totalRating / comments.length;
+        const totalRating = comments.reduce((sum, comment) => sum + comment.rating, 0)
+        const averageRating = totalRating / comments.length
 
-        return averageRating;
-    };
+        return averageRating
+    }
 
-    // Để sử dụng hàm calculateAverageRating và hiển thị trung bình cộng rating trong JSX:
-    const averageRating = calculateAverageRating();
+    const averageRating = calculateAverageRating()
 
     return (
         <main className='mx-auto'>

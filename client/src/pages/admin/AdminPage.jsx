@@ -2,8 +2,8 @@ import React from 'react'
 import { Outlet } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import Sidebar from '../../dashboard/Sidebar'
 import Nav from '../../dashboard/Nav'
+import Sidebar from './../../dashboard/SideBar'
 
 export default function AdminPage({ setShowHeader }) {
     setShowHeader(false)

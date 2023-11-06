@@ -104,7 +104,7 @@ export default function BuyPayment() {
     }
 
     const totalPrice = cartItems.reduce(
-        (total, item) => total + item.cartQuantity * (item.buyPrice - item.discountPrice),
+        (total, item) => item.offer ? total + item.cartQuantity * (item.buyPrice - item.discountPrice) : total + item.cartQuantity * item.buyPrice,
         0
     )
 
