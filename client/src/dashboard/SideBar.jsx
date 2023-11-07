@@ -29,15 +29,15 @@ export default function Sidebar() {
                     <i className='bi bi-house fs-5 me-2 px-3'></i>
                     <span className='fs-5'>Home</span>
                 </div>
-                <Link to='/admin' className='hover:bg-[#CD9B9B] hover:text-white mt-3 text-slate-600 py-2'>
+                <Link to='/admin' className='hover:bg-[#CD9B9B] hover:text-white mt-3 text-slate-600 py-2 hover:no-underline'>
                     <i className='bi bi-speedometer2 fs-5 me-2 px-3'></i>
                     <span className='fs-5'>Dashboard</span>
                 </Link>
-                <Link to='/admin/products' className='hover:bg-[#CD9B9B] hover:text-white mt-3 text-slate-600 py-2'>
+                <Link to='/admin/products' className='hover:bg-[#CD9B9B] hover:text-white mt-3 text-slate-600 py-2 hover:no-underline'>
                     <i className='bi bi-book fs-5 me-2 px-3'></i>
                     <span className='fs-5'>Products</span>
                 </Link>
-                <Link to='/admin/customers' className='hover:bg-[#CD9B9B] hover:text-white mt-3 text-slate-600 py-2'>
+                <Link to='/admin/customers' className='hover:bg-[#CD9B9B] hover:text-white mt-3 text-slate-600 py-2 hover:no-underline'>
                     <i className='bi bi-people fs-5 me-2 px-3'></i>
                     <span className='fs-5'>Customers</span>
                 </Link>
@@ -52,18 +52,18 @@ export default function Sidebar() {
                     </div>
                     {showDropdown && (
                         <div className='flex flex-col pl-8'>
-                            <Link to='/admin/report/rent' className='hover:bg-[#CD9B9B] hover:text-white mt-3 text-slate-600 py-2 flex items-center'>
+                            <Link to='/admin/rents' className='hover:bg-[#CD9B9B] hover:text-white mt-3 text-slate-600 py-2 flex items-center hover:no-underline'>
                                 <BiBook className='inline-block align-middle mr-5' size={20} />
                                 <span className='fs-5'>Rent</span>
                             </Link>
-                            <Link to='/admin/buys' className='hover:bg-[#CD9B9B] hover:text-white mt-3 text-slate-600 py-2 flex items-center'>
+                            <Link to='/admin/buys' className='hover:bg-[#CD9B9B] hover:text-white mt-3 text-slate-600 py-2 flex items-center hover:no-underline'>
                                 <BiShoppingBag className='inline-block align-middle mr-5' size={20} />
                                 <span className='fs-5'>Buy</span>
                             </Link>
                         </div>
                     )}
                 </div>
-                <Link to='/admin/logout' className='hover:bg-[#CD9B9B] hover:text-white mt-3 text-slate-600 py-2'>
+                <Link to='/admin/logout' className='hover:bg-[#CD9B9B] hover:text-white mt-3 text-slate-600 py-2 hover:no-underline'>
                     <i className='bi bi-power fs-5 me-2 px-3'></i>
                     <span className='fs-5'>Logout</span>
                 </Link>

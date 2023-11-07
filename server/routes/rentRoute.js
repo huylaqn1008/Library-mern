@@ -4,7 +4,7 @@ const { rentPayment, updateRentalStatus, getRentPayment, getAllRentPayments, get
 const rentPaymentRoute = express.Router()
 
 rentPaymentRoute.post('/rentpayment', rentPayment)
-rentPaymentRoute.post('/rentpayment/:rentPaymentId', updateRentalStatus)
+rentPaymentRoute.put('/rentpayment/:rentPaymentId', updateRentalStatus)
 rentPaymentRoute.get('/rentpayment/:rentPaymentId', getRentPayment)
 rentPaymentRoute.get('/rentpayment', getAllRentPayments)
 rentPaymentRoute.get('/rentaltotal', getTotalRentalPrice)

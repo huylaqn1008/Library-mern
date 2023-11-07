@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import BookItem from './../components/BookItem';
+import BookItem from './../components/BookItem'
 
 export default function Search() {
     const navigate = useNavigate()

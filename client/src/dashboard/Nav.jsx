@@ -1,6 +1,6 @@
-import React from 'react';
-import { BiSearch } from 'react-icons/bi';
-import { useSelector } from 'react-redux';
+import React from 'react'
+import { BiSearch } from 'react-icons/bi'
+import { useSelector } from 'react-redux'
 
 export default function Nav() {
     const { currentUser } = useSelector((state) => state.user)
@@ -29,5 +29,5 @@ export default function Nav() {
                 />
             </div>
         </nav>
-    );
+    )
 }

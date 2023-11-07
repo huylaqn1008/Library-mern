@@ -124,7 +124,7 @@ const bookSlice = createSlice({
             localStorage.setItem("cartItems", JSON.stringify(state.cartItems))
         },
         totalQuantity: (state) => {
-            state.cartTotalQuantity = state.cartItems.reduce((total, item) => total + item.cartQuantity, 0);
+            state.cartTotalQuantity = state.cartItems.reduce((total, item) => total + item.cartQuantity, 0)
         }
     },
 })

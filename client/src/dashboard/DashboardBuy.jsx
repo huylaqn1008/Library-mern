@@ -105,7 +105,6 @@ export default function DashboardBuy() {
                                 )
                             })}
                         </ul>
-
                         <p>Total Price: {selectedOrder.totalPrice.toLocaleString()} VNĐ</p>
                         <p>Date: {new Date(selectedOrder.createdAt).toLocaleDateString('vi-VN')}</p>
                         <button

@@ -7,7 +7,7 @@ export default function VerifyOtp() {
     const [showSuccess, setShowSuccess] = useState(false)
     const [showError, setShowError] = useState(false)
     const [resendDisabled, setResendDisabled] = useState(false)
-    const [showResendMessage, setShowResendMessage] = useState(false);
+    const [showResendMessage, setShowResendMessage] = useState(false)
     const [countdown, setCountdown] = useState(60)
 
     const navigate = useNavigate()

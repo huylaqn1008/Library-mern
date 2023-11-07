@@ -126,5 +126,3 @@ const getTotalRentalPrice = async (req, res, next) => {
 }
 
 module.exports = { rentPayment, updateRentalStatus, getRentPayment, getAllRentPayments, getTotalRentalPrice }
-
-

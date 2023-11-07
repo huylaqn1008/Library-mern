@@ -224,13 +224,13 @@ const getTopRating = async (req, res, next) => {
                     averageRating: -1,
                 },
             },
-        ]);
+        ])
 
-        res.status(200).json(topRatedBooks);
+        res.status(200).json(topRatedBooks)
     } catch (error) {
-        next(error);
+        next(error)
     }
-};
+}
 
 
 module.exports = { createBook, deleteBook, updateBook, getBook, getBooks, rateAndCommentBook, getBookComments, getAllBooks, getTopRating }

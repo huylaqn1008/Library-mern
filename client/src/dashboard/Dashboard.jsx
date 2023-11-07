@@ -91,7 +91,7 @@ export default function Dashboard() {
                             <i className='bi bi-credit-card p-3 fs-1'></i>
                         </div>
                     </Link>
-                    <div className='col-md-3 text-[#009ACD] hover:no-underline'>
+                    <Link to='/admin/rents' className='col-md-3 text-[#009ACD] hover:no-underline'>
                         <div className='p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded hover:scale-90 hover:z-10 transition-all duration-300'>
                             <div>
                                 <h3 className='fs-2'>{totalRentalPrice.toLocaleString()} VNĐ</h3>
@@ -99,10 +99,10 @@ export default function Dashboard() {
                             </div>
                             <i className='bi bi-cash-coin p-3 fs-1'></i>
                         </div>
-                    </div>
+                    </Link>
                 </div>
             </div>
-            <table className='table caption-top bg-white shadow-lg border-r-4'>
+            <table className='table caption-top bg-white shadow-lg border-r-4 mt-10'>
                 <caption className='text-[#00CD00] font-semibold mt-3 fs-4'>Recent Orders</caption>
                 <thead>
                     <tr>
@@ -133,7 +133,7 @@ export default function Dashboard() {
             </table>
 
             <div className='row g-3 my-2'>
-                <div className='text-[#00CD00] font-semibold mt-3 fs-4'>Current Top Rating</div>
+                <div className='text-[#00CD00] font-semibold mt-10 fs-4'>Current Top Rating</div>
                 {topRatedBooks.map((book, index) => (
                     <div className='col-md-4    ' key={index}>
                         <div
