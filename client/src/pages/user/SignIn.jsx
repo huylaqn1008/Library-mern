@@ -34,33 +34,39 @@ export default function SignIn() {
             const res = await fetch('api/auth/signin', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
             })
             const data = await res.json()
             console.log(data)
 
             if (res.ok) {
                 dispatch(signInSuccess(data))
-                navigate('/')
+
+                if (Number(data.role) === 0) {
+                    console.log("Redirecting to /admin")
+                    navigate('/admin', { replace: true })
+                } else {
+                    console.log("Redirecting to /")
+                    navigate('/', { replace: true })
+                }
             } else {
                 if (data.error === 'Email not registered!') {
                     dispatch(signInFailure("Email not registered!"))
                     setShowError(true)
                     return
-                } if (data.error === 'Invalid password!') {
+                }
+                if (data.error === 'Invalid password!') {
                     dispatch(signInFailure("Invalid password!"))
                     setShowError(true)
                     return
                 } else {
                     dispatch(signInFailure(data.error || 'An error occurred.'))
                 }
-
             }
 
             dispatch(signInSuccess(data))
-            navigate('/')
         } catch (error) {
             dispatch(signInFailure(error.message))
             setShowError(true)

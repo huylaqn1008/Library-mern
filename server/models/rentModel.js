@@ -41,7 +41,19 @@ const rentPaymentSchema = new mongoose.Schema({
     bookId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
-    }
+    },
+    notifications: [
+        {
+            message: {
+                type: String,
+                required: true
+            },
+            date: {
+                type: Date,
+                default: Date.now
+            }
+        }
+    ]
 })
 
 const RentPayment = mongoose.model('Rentpayment', rentPaymentSchema)

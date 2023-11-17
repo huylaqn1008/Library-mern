@@ -2,11 +2,16 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Logo from '../assets/logo.png'
 import { BiBook, BiShoppingBag } from 'react-icons/bi'
+import { signOutUserFailure, signOutUserStart, signOutUserSuccess } from '../redux/User/userSlice'
+import { useDispatch } from 'react-redux'
 
 export default function Sidebar() {
     const [showDropdown, setShowDropdown] = useState(false)
 
+    const [showLogoutModal, setShowLogoutModal] = useState(false)
+
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown)
@@ -15,6 +20,36 @@ export default function Sidebar() {
     const handleHomeClick = () => {
         navigate('/')
         window.location.reload()
+    }
+
+    const handleSignOut = async () => {
+        if (showLogoutModal) {
+            try {
+                dispatch(signOutUserStart())
+                const res = await fetch('/api/auth/signout')
+                const data = await res.json()
+                if (data.success === false) {
+                    dispatch(signOutUserFailure(data.message))
+                } else {
+                    dispatch(signOutUserSuccess())
+                    window.location.reload()
+                }
+            } catch (error) {
+                dispatch(signOutUserFailure(error.message))
+            } finally {
+                closeLogoutModal()
+            }
+        } else {
+            openLogoutModal()
+        }
+    }
+
+    const openLogoutModal = () => {
+        setShowLogoutModal(true)
+    }
+
+    const closeLogoutModal = () => {
+        setShowLogoutModal(false)
     }
 
     return (
@@ -63,11 +98,24 @@ export default function Sidebar() {
                         </div>
                     )}
                 </div>
-                <Link to='/admin/logout' className='hover:bg-[#CD9B9B] hover:text-white mt-3 text-slate-600 py-2 hover:no-underline'>
+                <div className='hover:bg-[#CD9B9B] hover:text-white mt-3 text-slate-600 py-2 hover:no-underline'>
                     <i className='bi bi-power fs-5 me-2 px-3'></i>
-                    <span className='fs-5'>Logout</span>
-                </Link>
+                    <span className='fs-5 cursor-pointer' onClick={handleSignOut}>Logout</span>
+                </div>
             </div>
+
+            {
+                showLogoutModal && (
+                    <div className="fixed inset-0 flex items-center justify-center z-50">
+                        <div className="fixed inset-0 bg-black opacity-50"></div>
+                        <div className="w-96 p-6 bg-white rounded-lg shadow-lg text-center relative z-10">
+                            <p className="text-red-500">Are you sure you want to sign out?</p>
+                            <button onClick={handleSignOut} className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 mr-2">Yes</button>
+                            <button onClick={closeLogoutModal} className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600">No</button>
+                        </div>
+                    </div>
+                )
+            }
         </div>
     )
 }

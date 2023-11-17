@@ -125,4 +125,56 @@ const getTotalRentalPrice = async (req, res, next) => {
     }
 }
 
-module.exports = { rentPayment, updateRentalStatus, getRentPayment, getAllRentPayments, getTotalRentalPrice }
+const sendNotification = async (req, res, next) => {
+    try {
+        const { rentPaymentId } = req.params
+        const { message } = req.body
+
+        const rentPayment = await RentPayment.findById(rentPaymentId)
+
+        if (!rentPayment) {
+            return res.status(404).json({ message: 'Rent payment not found' })
+        }
+
+        const today = new Date()
+        const rentalEndDate = new Date(rentPayment.rentalEndDate)
+        const daysOverdue = Math.max(0, Math.floor((today - rentalEndDate) / (24 * 60 * 60 * 1000)))
+
+        const notificationMessage = message || `Quyển sách "${rentPayment.bookTitle}" đã hết hạn thuê ${daysOverdue} ngày. 
+        Nếu sau 14 ngày mà bạn vẫn chưa trả sách thì chúng sẽ lấy 70% tổng tiền thuê mà chúng tôi sẽ trả lại cho nếu bạn 
+        trả lại sách cho chúng tôi theo thỏa thuận ban đầu. Xin cảm ơn`
+
+        rentPayment.notifications.push({
+            message: notificationMessage,
+            date: new Date(),
+        })
+
+        await rentPayment.save()
+
+        res.status(200).json({ message: 'Notification sent and saved successfully' })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getUserNotifications = async (req, res, next) => {
+    try {
+        const { email } = req.params
+
+        const userRentPayments = await RentPayment.find({ email })
+
+        if (!userRentPayments || userRentPayments.length === 0) {
+            return res.status(404).json({ message: 'No notifications found for the user' })
+        }
+
+        const notifications = userRentPayments.reduce((acc, rentPayment) => {
+            return acc.concat(rentPayment.notifications)
+        }, [])
+
+        res.status(200).json({ notifications })
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { rentPayment, updateRentalStatus, getRentPayment, getAllRentPayments, getTotalRentalPrice, sendNotification, getUserNotifications }

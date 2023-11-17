@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import Switch from 'react-switch'
+import { toast } from 'react-toastify'
 
 export default function DashboardRent() {
     const [rentPayments, setRentPayments] = useState([])
+
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 5
 
@@ -54,6 +56,45 @@ export default function DashboardRent() {
         setCurrentPage(newPage)
     }
 
+    const handleNotification = async (rentPaymentId) => {
+        try {
+            const rentPaymentResponse = await fetch(`/api/rent/rentpayment/${rentPaymentId}`)
+
+            if (!rentPaymentResponse.ok) {
+                toast.error('Failed to fetch rent payment data', {
+                    position: toast.POSITION.BOTTOM_LEFT,
+                })
+                return
+            }
+
+            const rentPaymentData = await rentPaymentResponse.json()
+            const userName = rentPaymentData.rentPayment.userName
+
+            const sendNotificationResponse = await fetch(`/api/rent/sendNotification/${rentPaymentId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: rentPaymentData.rentPayment.message }),
+            })
+
+            if (sendNotificationResponse.ok) {
+                toast.success(`Notification sent successfully to ${userName}`, {
+                    position: toast.POSITION.BOTTOM_LEFT,
+                })
+            } else {
+                toast.error(`Failed to send notification to ${userName}`, {
+                    position: toast.POSITION.BOTTOM_LEFT,
+                })
+            }
+        } catch (error) {
+            console.error('Error sending notification:', error)
+            toast.error('Error sending notification', {
+                position: toast.POSITION.BOTTOM_LEFT,
+            })
+        }
+    }
+
     return (
         <div className="px-5 flex flex-col justify-center">
             <h1 className="text-4xl mt-10 font-bold mb-4 flex justify-center">Rental Invoices</h1>
@@ -67,6 +108,7 @@ export default function DashboardRent() {
                         <th className="py-2 px-4 border">Rental End Date</th>
                         <th className="py-2 px-4 border">Rental Total Price</th>
                         <th className="py-2 px-4 border">Rental Status</th>
+                        <th className="py-2 px-4 border">Notify</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -84,6 +126,13 @@ export default function DashboardRent() {
                                     checked={rentPayment.rentalStatus === 'Active'}
                                 />
                                 {rentPayment.rentalStatus === 'Active' ? 'Renting' && (new Date(rentPayment.rentalEndDate) < new Date() ? 'Out of date' : 'Reting') : 'Returned'}
+                            </td>
+                            <td className="py-2 px-4 border">
+                                {rentPayment.rentalStatus === 'Active' && new Date(rentPayment.rentalEndDate) < new Date() && (
+                                    <button onClick={() => handleNotification(rentPayment._id)}>
+                                        Notify
+                                    </button>
+                                )}
                             </td>
                         </tr>
                     ))}

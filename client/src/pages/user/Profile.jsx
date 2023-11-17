@@ -12,23 +12,32 @@ export default function Profile() {
     const [file, setFile] = useState(undefined)
     const [filePerc, setFilePerc] = useState(0)
     const [fileUploadError, setFileUploadError] = useState(false)
+
     const [formData, setFormData] = useState({
         username: currentUser.username || '',
         email: currentUser.email,
     })
+
     const [updateSuccess, setUpdateSuccess] = useState(false)
     const [updateLoading, setUpdateLoading] = useState(false)
     const [updateError, setUpdateError] = useState("")
+
     const [inputError, setInputError] = useState("")
+
     const [initialUsername, setInitialUsername] = useState(currentUser.username)
+
     const [showLogoutModal, setShowLogoutModal] = useState(false)
+
     const [showBooks, setShowBooks] = useState(false)
     const [showBooksError, setShowBooksError] = useState(false)
+
     const [userBooks, setUserBooks] = useState([])
+
     const [showDeleteBookModal, setShowDeleteBookModal] = useState(false)
     const [bookToDelete, setBookToDelete] = useState(null)
     const [deleteSuccess, setDeleteSuccess] = useState(false)
     const [deleteSuccessMessage, setDeleteSuccessMessage] = useState("")
+
     const [currentPage, setCurrentPage] = useState(1)
 
     const vietnamMobileRegex = /^(03[2-9]|05[6-9]|07[06-9]|08[1-9]|09[0-9])[0-9]{7}$/
